@@ -54,8 +54,8 @@ Provenientes de granjas locales dedicadas a la producción responsable. Ofrecemo
 ## Stack Tecnológico
 
 - **Estructura:** HTML5 semántico.
-- **Estilos:** CSS3 (Flexbox, CSS Grid, variables y diseño adaptativo).
-- **Lógica:** JavaScript Vanilla (ES6+) para manejo dinámico del DOM y validaciones.
+- **Estilos:** CSS3.
+- **Lógica:** JavaScript Vanilla para manejo de validaciones.
 
 ---
 
