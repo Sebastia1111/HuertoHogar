@@ -157,8 +157,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 20px;min-height:60vh}
 .cat-lacteos{background:linear-gradient(135deg,#eaf3fc,#d4e5f7)}
 .tarjeta-cuerpo{padding:14px;display:flex;flex-direction:column;gap:5px;flex:1}
 .codigo{font-size:11.5px;color:var(--muted);letter-spacing:.5px}
-.nombre-producto{font-size:15.5px;font-weight:700}
-.precio{font-weight:800;color:var(--verde-oscuro);font-size:17px}
+.nombre-producto{font-size:15.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.precio{font-weight:800;color:var(--verde-oscuro);font-size:17px}
 .stock-mini{font-size:12px;color:var(--muted)}
 .tarjeta-cuerpo .btn{margin-top:auto}
 
@@ -278,22 +277,91 @@ footer ul a:hover{color:#fff}
   .catalogo-cuerpo{flex-direction:column}
   .panel-filtros{width:auto;position:static;order:-1}
   .hero-arte{display:none}
-  .pie-grid{grid-template-columns:1fr 1fr}
   .contacto-grid{grid-template-columns:1fr}
+  .detalle-producto{grid-template-columns:1fr;gap:20px}
+  .detalle-producto figure{aspect-ratio:1/.7;font-size:100px}
+  .pie-grid{grid-template-columns:1fr 1fr}
 }
+
 @media (max-width:620px){
-  .cabecera{padding:8px 12px}
-  .logo{font-size:17px}
-  main{padding:20px 14px}
-  .hero{padding:22px;flex-direction:column;align-items:flex-start}
-  .grilla-productos{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-  .tarjeta-info{min-width:170px;max-width:170px;padding:14px}
-  .detalle-producto{grid-template-columns:1fr;padding:18px}
-  .detalle-producto figure{font-size:90px}
-  .tarjeta-blog{flex-direction:column}
-  .portada-mini{width:100%;aspect-ratio:21/9;min-height:0}
-  .formulario{padding:22px 18px}
-  .campo-doble{grid-template-columns:1fr}
-  .pie-grid{grid-template-columns:1fr;padding:36px 20px}
-  .articulo-blog{padding:20px}
+  .cabecera{padding:8px 10px;gap:4px}
+  .acciones{gap:3px}
+  .btn-icono{width:38px;height:38px}
+  .logo{font-size:16px;gap:6px}
+  .logo svg{width:22px;height:22px}
+  .hamburguesa{width:20px;gap:4px}
+  .btn-menu-abierto .hamburguesa span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .btn-menu-abierto .hamburguesa span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+  h1{font-size:24px}
+  h2{font-size:20px}
+  .subtitulo{font-size:18px;margin:26px 0 12px}
+  main{padding:18px 14px}
+  .btn{padding:11px 14px}
+
+  .hero{padding:20px;border-radius:18px;margin-bottom:20px}
+  .hero-botones{width:100%}
+  .hero-botones .btn{flex:1;min-width:130px}
+
+  .inicio-superior{gap:16px;margin-bottom:34px}
+  .tarjetas-fila{gap:10px;padding:2px 2px 12px;scroll-padding-left:2px;-webkit-overflow-scrolling:touch}
+  .tarjeta-info{min-width:158px;max-width:158px;padding:14px;border-radius:14px;gap:2px}
+  .tarjeta-info .icono{width:38px;height:38px;font-size:19px;border-radius:10px}
+  .tarjeta-info strong{font-size:13.5px}
+  .tarjeta-info small{font-size:11.5px}
+  .detalle-tarjeta{padding:16px;border-radius:12px}
+  .detalle-tarjeta li{font-size:14px}
+  .panel-vendido{padding:16px;border-radius:14px}
+
+  .catalogo-cuerpo{margin-top:12px}
+  .panel-filtros{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;padding:14px 14px 16px;border-radius:14px}
+  .panel-filtros h3{grid-column:1/-1;margin-bottom:0}
+  .panel-filtros .campo-compacto{margin-bottom:0}
+  .panel-filtros .campo-compacto:first-of-type{grid-column:1/-1}
+  .panel-filtros .contador-resultados{grid-column:1/-1;margin:0 0 2px}
+  .panel-filtros .btn{grid-column:1/-1}
+
+  .grilla-productos{grid-template-columns:repeat(2,1fr);gap:10px}
+  .tarjeta-producto{border-radius:14px}
+  .tarjeta-producto figure{font-size:46px;aspect-ratio:1/.85}
+  .tarjeta-cuerpo{padding:10px 11px 12px;gap:3px}
+  .codigo{font-size:10px}
+  .nombre-producto{font-size:13.5px}
+  .precio{font-size:14.5px}
+  .precio small{font-size:11px}
+  .stock-mini{font-size:11px}
+  .tarjeta-cuerpo .btn{padding:8px 10px;font-size:13px;border-radius:9px}
+
+  .detalle-producto{padding:16px;border-radius:16px}
+  .detalle-producto figure{font-size:72px}
+  .detalle-info h1{font-size:22px}
+  .precio-detalle{font-size:22px}
+  .btn-cant{width:42px;height:42px}
+  .cantidad-controles input{width:56px;height:42px}
+  .compra .btn{flex:1;min-width:150px}
+
+  .tarjeta-blog{padding:14px}
+  .portada-mini{font-size:36px}
+  .articulo-blog{padding:18px;border-radius:16px}
+  .portada{font-size:60px;border-radius:12px}
+
+  .formulario{padding:20px 16px;border-radius:14px}
+  .btn-step{width:30px;height:30px}
+  .carrito-cabecera,.carrito-pie{padding:14px 16px}
+  .items-carrito{padding:6px 16px}
+  .menu-usuario{top:58px;right:10px;width:calc(100vw - 20px);max-width:250px}
+  .aviso{bottom:14px;font-size:13.5px;padding:11px 16px}
+  .pie-grid{padding:32px 18px;gap:24px}
+  .pie-final{padding:14px}
+}
+
+@media (max-width:380px){
+  .cabecera{padding:8px}
+  .logo{font-size:14.5px}
+  .logo svg{width:20px;height:20px}
+  .btn-icono{width:35px;height:35px}
+  .grilla-productos{gap:8px}
+  .tarjeta-cuerpo{padding:9px 9px 11px}
+  .tarjeta-info{min-width:146px;max-width:146px}
+  .panel-filtros{grid-template-columns:1fr}
 }
