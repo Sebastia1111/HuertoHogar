@@ -3,10 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Título</title>
+    <title>Maktaba — Digital Islamic Library</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  Cuerpo
+
+    <div class="top-bar">
+        <div class="container">
+            <div class="lang-selector">
+                <span>🌐 Language / اللغة / Idioma:</span>
+                <div id="google_translate_element"></div>
+            </div>
+            <div>📚 <i>Biblioteca Virtual Islámica</i></div>
+        </div>
+    </div>
+
+    <header class="hero-header">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>Online Maktaba</h1>
+                <h2>Fiqh • Aqidah • Tafsir • Más</h2>
+                <p>Bienvenido a la biblioteca digital. Una selección cuidadosamente organizada de obras clásicas para el estudio y beneficio personal. Haz clic en cualquier portada o botón para acceder al PDF completo.</p>
+            </div>
+            <div class="avatar-box">
+                <img src="img/pj1.jpg" alt="Avatar Autor">
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <nav class="main-nav">
+            <div class="category-tags">
+                <button class="tag active" onclick="filterCategory('all', this)">Todos (12)</button>
+                <button class="tag" onclick="filterCategory('aqidah', this)">Aqidah</button>
+                <button class="tag" onclick="filterCategory('fiqh', this)">Fiqh</button>
+                <button class="tag" onclick="filterCategory('tafsir', this)">Tafsir</button>
+                <button class="tag" onclick="filterCategory('tazkiyah', this)">Tazkiyah</button>
+            </div>
+            <div class="search-box">
+                🔍 <input type="text" id="searchInput" onkeyup="searchBooks()" placeholder="Buscar libro, autor o materia...">
+            </div>
+        </nav>
+
+        <div id="no-results" style="display: none; text-align: center; padding: 40px; color: #800020; font-weight: bold;">
+            No se encontraron libros que coincidan con tu búsqueda.
+        </div>
+
+        <div class="books-grid" id="booksGrid">
+
+            <!-- 1. LA ENFERMEDAD Y SU CURA -->
+            <article class="book-card" data-category="tazkiyah" data-search="la enfermedad y su cura ibn al-qayyim al-jawziyyah tazkiyah corazon alma">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/spiritual-disease.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/611ZnzAk4dL.jpg" alt="La Enfermedad y su Cura">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-tazkiyah">Tazkiyah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/spiritual-disease.html" target="_blank" rel="noopener">La Enfermedad y su Cura</a>
+                        </h2>
+                        <p class="book-author">Ibn Al-Qayyim Al-Jawziyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Famosa obra clásica que explora las dolencias espirituales del corazón, analiza cómo los pecados dañan el alma y detalla los remedios para lograr la paz interior y la cercanía a Dios.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/spiritual-disease.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. MAJMU AL-FATAWA -->
+            <article class="book-card" data-category="fiqh" data-search="majmu al-fatawa ibn taymiyyah fiqh fatawa jurisprudencia">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://es.slideshare.net/slideshow/majmu-al-fatawa-ibn-taymiyyah-volume-1-pdf/277715286" target="_blank" rel="noopener">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS14qX321yxvUovARmhaGENb8pstP5FudNCKRYMoBfCUoaCAE_9S4e_M0qP&s=10" alt="Majmu Al-Fatawa">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-fiqh">Fiqh / Fatawa</span>
+                        <h2 class="book-title">
+                            <a href="https://es.slideshare.net/slideshow/majmu-al-fatawa-ibn-taymiyyah-volume-1-pdf/277715286" target="_blank" rel="noopener">Majmu Al-Fatawa</a>
+                        </h2>
+                        <p class="book-author">Imam Ibn Taymiyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        La monumental recopilación de opiniones legales (fatuas), epístolas y escritos del erudito islámico Ibn Taymiyyah sobre doctrina, jurisprudencia y metodología.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://es.slideshare.net/slideshow/majmu-al-fatawa-ibn-taymiyyah-volume-1-pdf/277715286" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. EL RECUERDO DEL MÁS MISERICORDIOSO -->
+            <article class="book-card" data-category="tazkiyah" data-search="el recuerdo del mas misericordioso al-wabil al-sayyib ibn al-qayyim al-jawziyyah dhikr tazkiyah">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/remembrance-most-merciful.html" target="_blank" rel="noopener">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvcUUJPH3C7DuYvtRvjpmWLm3X1iFXwg2MnYyOi7IVEJAqxddu9RAO1G2&s=10" alt="El Recuerdo del Más Misericordioso">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-tazkiyah">Dhikr / Tazkiyah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/remembrance-most-merciful.html" target="_blank" rel="noopener">El Recuerdo del Más Misericordioso</a>
+                        </h2>
+                        <p class="book-author">Ibn Al-Qayyim Al-Jawziyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Conocido originalmente como <i>Al-Wabil al-Sayyib</i>. Una guía profunda sobre la purificación del corazón y más de 70 beneficios espirituales y prácticos del recuerdo constante de Allah (Dhikr).
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/remembrance-most-merciful.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. LA EXCELENCIA DEL CONOCIMIENTO -->
+            <article class="book-card" data-category="aqidah" data-search="la excelencia del conocimiento ibn rajab al-hanbali ilm aqidah">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/Books/Excellence%20Of%20Knowledge.pdf" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/A10dcT3XyWL._AC_UF1000,1000_QL80_.jpg" alt="La Excelencia Del Conocimiento">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Ilm / Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/Books/Excellence%20Of%20Knowledge.pdf" target="_blank" rel="noopener">La Excelencia Del Conocimiento</a>
+                        </h2>
+                        <p class="book-author">Ibn Rajab Al-Hanbali</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Tratado magistral donde se diferencia el conocimiento beneficioso del inútil, contrastando el entendimiento profundo de las primeras generaciones frente a métodos posteriores.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/Books/Excellence%20Of%20Knowledge.pdf" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5. TAFSIR IBN KATHIR -->
+            <article class="book-card" data-category="tafsir" data-search="tafsir ibn kathir coran exegesis comento">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/tafsir-ibn-kathir.html" target="_blank" rel="noopener">
+                            <img src="https://mudahamatan.home.blog/wp-content/uploads/2020/09/quran-tafsir-ibn-kathir-full-html-web-online-free.jpg?w=640" alt="Tafsir Ibn Kathir">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-tafsir">Tafsir</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/tafsir-ibn-kathir.html" target="_blank" rel="noopener">Tafsir Ibn Kathir (10 Vol.)</a>
+                        </h2>
+                        <p class="book-author">Ibn Kathir</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        El comentario coránico más célebre y respetado en el mundo islámico. Explica el Corán a través del propio Corán, el Hadiz auténtico y los comentarios de los Sahaba.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/tafsir-ibn-kathir.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 6. AL-UMDAH FI AL-FIQH -->
+            <article class="book-card" data-category="fiqh" data-search="al umdah fi al fiqh ibn qudamah al maqdisi jurisprudencia">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/umdat-al-fiqh.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/81xI-WfA9iL._AC_UF1000,1000_QL80_.jpg" alt="Umdat al Fiqh">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-fiqh">Fiqh</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/Books/Umdat%20al-Fiqh.pdf" target="_blank" rel="noopener">Al-Umdah fi al-Fiqh</a>
+                        </h2>
+                        <p class="book-author">Imam Ibn Qudamah Al-Maqdisi</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Un texto fundamental y estructurado de jurisprudencia islámica que expone las normas prácticas y adoraciones basándose en las evidencias directas del Corán y la Sunnah.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/umdat-al-fiqh.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 7. AL-AQIDAH AL-WASITIYYAH -->
+            <article class="book-card" data-category="aqidah" data-search="al aqidah al wasitiyyah ibn taymiyyah creencia monoteismo tawhid">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/wasitiyyah.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/81PjT-z6aKL._AC_UF1000,1000_QL80_.jpg" alt="Al-Aqidah Al-Wasitiyyah">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/wasitiyyah.html" target="_blank" rel="noopener">Al-Aqidah Al-Wasitiyyah</a>
+                        </h2>
+                        <p class="book-author">Shaykh al-Islam Ibn Taymiyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Compendio claro y conciso sobre los principios fundamentales de la fe islámica, el monoteísmo y la comprensión de los Nombres y Atributos de Allah.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/wasitiyyah.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 8. ZA'AD AL-MA'AD -->
+            <article class="book-card" data-category="fiqh" data-search="zad al maad ibn al qayyim al jawziyyah fiqh seerah profeta muhammad">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/zad-al-maad.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/81sL6-uY+vL._AC_UF1000,1000_QL80_.jpg" alt="Zad al Maad">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-fiqh">Fiqh & Seerah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/zad-al-maad.html" target="_blank" rel="noopener">Za'ad Al-Ma'ad</a>
+                        </h2>
+                        <p class="book-author">Ibn Al-Qayyim Al-Jawziyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Análisis detallado sobre la vida del Profeta Muhammad (ﷺ), sus actos de adoración, juicios éticos y hábitos diarios como ejemplo a seguir.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/zad-al-maad.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 9. KITAB AT-TAWHID -->
+            <article class="book-card" data-category="aqidah" data-search="kitab at tawhid muhammad ibn abd al wahhab monoteismo aqidah">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/kitab-at-tawhid.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/718y91r8g5L._AC_UF1000,1000_QL80_.jpg" alt="Kitab at Tawhid">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/kitab-at-tawhid.html" target="_blank" rel="noopener">Kitab At-Tawhid</a>
+                        </h2>
+                        <p class="book-author">Muhammad ibn Abd al-Wahhab</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Tratado dedicado a la explicación del monoteísmo puro en la adoración, recopilando versículos del Corán y Hadices para clarificar las bases de la fe.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/kitab-at-tawhid.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 10. SHARH AS-SUNNAH -->
+            <article class="book-card" data-category="aqidah" data-search="sharh as sunnah imam al barbahari aqidah salaf sunnah">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/sharh-as-sunnah.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/71N-45B0oGL._AC_UF1000,1000_QL80_.jpg" alt="Sharh as-Sunnah">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/sharh-as-sunnah.html" target="_blank" rel="noopener">Sharh As-Sunnah</a>
+                        </h2>
+                        <p class="book-author">Imam Al-Barbahari</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Obra clásica sobre los fundamentos del credo islámico y el mantenimiento de las tradiciones de las primeras generaciones.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/sharh-as-sunnah.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 11. KITAB AL-EEMAN -->
+            <article class="book-card" data-category="aqidah" data-search="kitab al eeman ibn taymiyyah iman fe aqidah">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/book-of-iman.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/71I3u0LSoUL._AC_UF1000,1000_QL80_.jpg" alt="Kitab al Eeman">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/book-of-iman.html" target="_blank" rel="noopener">Kitab Al-Eeman</a>
+                        </h2>
+                        <p class="book-author">Shaykh al-Islam Ibn Taymiyyah</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Exposición amplia sobre el concepto de la fe en el Islam, sus componentes de creencia, palabra y acción, y sus variaciones en la vida cotidiana.
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/book-of-iman.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 12. TRES PRINCIPIOS FUNDAMENTALES -->
+            <article class="book-card" data-category="aqidah" data-search="los tres principios fundamentales muhammad ibn abd al wahhab aqidah al usul al thalatha">
+                <div class="card-top">
+                    <div class="cover-wrapper">
+                        <a href="https://www.kalamullah.com/three-principals.html" target="_blank" rel="noopener">
+                            <img src="https://m.media-amazon.com/images/I/81xG-Y3gTzL._AC_UF1000,1000_QL80_.jpg" alt="Tres Principios Fundamentales">
+                        </a>
+                    </div>
+                    <div class="card-header-info">
+                        <span class="badge badge-aqidah">Aqidah</span>
+                        <h2 class="book-title">
+                            <a href="https://www.kalamullah.com/three-principals.html" target="_blank" rel="noopener">Los Tres Principios Fundamentales</a>
+                        </h2>
+                        <p class="book-author">Muhammad ibn Abd al-Wahhab</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="book-desc">
+                        Un texto introductorio esencial que aborda el conocimiento del Creador, la religión del Islam con sus evidencias y la vida del Profeta Muhammad (ﷺ).
+                    </p>
+                    <div class="card-footer">
+                        <a href="https://www.kalamullah.com/three-principals.html" target="_blank" rel="noopener" class="pdf-btn">
+                            📄 PDF
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Maktaba Digital &copy; 2026 — Para la difusión del conocimiento beneficioso.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentCategory = 'all';
+
+        function filterCategory(category, element) {
+            currentCategory = category;
+            
+            // Actualizar clase activa en botones
+            const tags = document.querySelectorAll('.category-tags .tag');
+            tags.forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+
+            // Filtrar
+            applyFilters();
+        }
+
+        function searchBooks() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+            const books = document.querySelectorAll('.book-card');
+            let visibleCount = 0;
+
+            books.forEach(book => {
+                const bookCategory = book.getAttribute('data-category');
+                const bookSearchData = book.getAttribute('data-search').toLowerCase();
+
+                const matchesCategory = (currentCategory === 'all' || bookCategory === currentCategory);
+                const matchesSearch = (searchValue === '' || bookSearchData.includes(searchValue));
+
+                if (matchesCategory && matchesSearch) {
+                    book.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    book.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('no-results');
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'es',
+                includedLanguages: 'en,ar,es,fr,tr,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+    <script src="script.js"></script>
+
+
+
+    <button class="btn-aportar" onclick="abrirModal()">➕ Aportar un PDF</button>
+    
+    <div id="modalAporte" class="modal-bg" style="display:none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <h2>📚 Enviar un Libro o Sugerencia</h2>
+            <p>Comparte un enlace de Google Drive, Dropbox o web con el PDF:</p>
+
+            <form id="pdfForm" onsubmit="enviarAporte(event)">
+                <input type="text" id="nombreLibro" placeholder="Título del Libro *" required>
+                <input type="text" id="autorLibro" placeholder="Autor / Erudito *" required>
+                <input type="url" id="linkPdf" placeholder="Enlace al PDF (Drive, Dropbox, etc.) *" required>
+                <textarea id="mensajeUsuario" placeholder="Notas o descripción breve del libro... *" required></textarea>
+
+                <button type="submit" class="btn-enviar" id="btnSubmit">✉️ Enviar Aporte</button>
+            </form>
+
+            <div id="statusMensaje" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
+        </div>
+    </div>
 </body>
 </html>
