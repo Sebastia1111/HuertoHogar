@@ -1,4 +1,4 @@
-// formatos de precio al estilo chileno
+// formatos de precio aca en chile
 const fmt = n => '$' + n.toLocaleString('es-CL');
 
 // escape basico para cuando mostramos texto que escribio el usuario
@@ -831,3 +831,25 @@ function iniciar(){
 }
 
 iniciar();
+
+
+/* esto a ver si me sirve en el scroll de las tarjetas */
+(function(){
+  const fila = document.querySelector('.tarjetas-fila');
+  if(!fila) return;
+  const nav = document.createElement('div');
+  nav.className = 'carrusel-nav';
+  nav.innerHTML = '<button class="btn-flecha" aria-label="Anterior">‹</button><button class="btn-flecha" aria-label="Siguiente">›</button>';
+  fila.before(nav);
+  const [prev, next] = nav.querySelectorAll('.btn-flecha');
+  const paso = () => Math.max(fila.clientWidth * .7, 180);
+  prev.addEventListener('click', () => fila.scrollBy({left:-paso(), behavior:'smooth'}));
+  next.addEventListener('click', () => fila.scrollBy({left:paso(), behavior:'smooth'}));
+  const actualizar = () => {
+    prev.disabled = fila.scrollLeft < 10;
+    next.disabled = fila.scrollLeft > fila.scrollWidth - fila.clientWidth - 10;
+  };
+  fila.addEventListener('scroll', actualizar, {passive:true});
+  window.addEventListener('resize', actualizar);
+  actualizar();
+})();
