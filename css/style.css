@@ -19,7 +19,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 body.bloqueado{overflow:hidden}
 
 /*esto me sirve para el responsivo*/
-html{overflow-x:hidden}
+html{overflow-x:clip}
 body{overflow-x:clip;overflow-wrap:break-word}
 img,svg{max-width:100%}
 
@@ -120,7 +120,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 20px;min-height:60vh}
 /* tarjetas de informacion */
 .inicio-superior{display:flex;gap:22px;align-items:flex-start;margin-bottom:44px}
 .panel-info{flex:1;min-width:0}
-.tarjetas-fila{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 14px;scrollbar-width:thin}
+.tarjetas-fila{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 4px 14px;scrollbar-width:thin}
 .tarjetas-fila::-webkit-scrollbar{height:8px}
 .tarjetas-fila::-webkit-scrollbar-thumb{background:var(--borde-fuerte);border-radius:8px}
 .tarjeta-info{min-width:200px;max-width:200px;flex:0 0 auto;scroll-snap-align:start;background:var(--blanco);border:1px solid var(--borde);border-radius:var(--radio);padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;transition:transform .25s,box-shadow .25s,border-color .25s}
