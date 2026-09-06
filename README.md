@@ -1,11 +1,12 @@
 <div align="center">
 
-# 🌱 HuertoHogar
+# HuertoHogar
 ### Tienda Web de Productos Orgánicos y Del Campo
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/es/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+<!-- [![LocalStorage](https://img.shields.io/badge/Storage-LocalStorage-FF6D00?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/API/Window/localStorage) -->
 
 </div>
 
@@ -13,28 +14,83 @@
 
 ## Descripción del Proyecto
 
-Es una plataforma web e-commerce diseñada para conectar a las familias directamente con la frescura del campo. El proyecto ofrece un catálogo detallado de frutas, verduras, lácteos y procesados orgánicos, garantizando calidad, sostenibilidad y sabor en la mesa de los clientes.
+**HuertoHogar** es una tienda online dedicada a la venta de productos frescos: frutas de temporada, verduras orgánicas, productos orgánicos y lácteos de granjas locales. Hoy despacha a las principales ciudades de Chile.
 
-Está desarrollado exclusivamente utilizando **HTML5, CSS3 y JavaScript Vanilla**, enfocándose en un diseño responsivo, limpio, ligero y sin dependencias externas complejas.
-
----
-
-## Categorías y Descripción
-
-### Frutas Frescas
-Nuestra selección de frutas frescas ofrece una experiencia directa del campo a tu hogar. Cultivadas y cosechadas en su punto óptimo de madurez para asegurar sabor y frescura. Aportan vitaminas y nutrientes esenciales ideales para consumo diario, ensaladas o batidos.
-
-### Verduras Orgánicas
-Gama de verduras cultivadas sin pesticidas ni químicos, garantizando un sabor auténtico y natural. Ricas en fibra y minerales, ideales para promover una alimentación consciente, saludable y sostenible.
-
-### Productos Orgánicos
-Elaborados con ingredientes naturales y procesados de manera responsable. Desde mieles hasta granos y semillas, esta categoría apoya un estilo de vida saludable que respeta el medio ambiente sin comprometer la calidad.
-
-### Productos Lácteos
-Provenientes de granjas locales dedicadas a la producción responsable. Ofrecemos leches y derivados frescos, ricos en calcio y nutrientes esenciales para toda la familia.
+El proyecto está desarrollado **100% con HTML, CSS y JavaScript vanilla**, sin frameworks ni dependencias externas.
 
 ---
 
+## Funcionalidades
+
+| Vista | Descripción |
+| ----- | ----------- |
+| **Home** | Hero de bienvenida, tarjetas de información con scroll horizontal, sección de "lo más vendido", catálogo con búsqueda especial y filtros en tiempo real |
+| **Productos** | Listado generado desde un arreglo de JavaScript, con carrito funcional en la vista |
+| **Detalle del producto** | Descripción completa, control de cantidad según stock y añadir al carrito |
+| **Carrito** | Persistencia en `localStorage`, validación contra stock, totales y generación de pedidos simulados |
+| **Ingreso / Registro** | Validaciones en tiempo real: correos Duoc/Gmail, RUN chileno con dígito verificador, regiones y comunas dinámicas |
+| **Nosotros** | Historia, misión, visión, categorías del negocio y equipo de desarrollo |
+| **Blogs + Detalle** | 2 artículos con sus respectivas vistas de detalle |
+| **Contacto** | Formulario validado con contador de caracteres en vivo |
+
+Además:
+
+- **Búsqueda general** (lupa en la cabecera) sobre productos, blogs y secciones
+- **Menú lateral deslizante** con navegación completa
+- **Diseño responsivo** para móvil, tablet y escritorio
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+HuertoHogar/
+├── css/
+│   └── style.css
+├── js/
+│   └── script.js
+├── assets/
+│   └── img/
+├── index.html
+└── README.md
+```
+
+---
+
+## Ejecución Local
+
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/usuario/huertohogar.git
+   cd huertohogar
+   ```
+2. Abre `index.html` en tu navegador (o usa la extensión *Live Server* de VS Code).
+3. Listo. No requiere instalación ni dependencias.
+
+También puedes desplegarlo gratis con **GitHub Pages** desde `Settings → Pages`.
+
+---
+
+## Cuentas de Prueba
+
+| Correo | Contraseña | Rol |
+| ------ | ---------- | --- |
+| `admin@duoc.cl` | `admin123` | Administrador |
+| `vendedor@duoc.cl` | `vend123` | Vendedor |
+
+Para probar como **Cliente**, simplemente crea una cuenta desde la vista de registro.
+
+---
+
+## Validaciones Implementadas
+
+- **Correo:** requerido en ingreso, máximo 100 caracteres, solo dominios `@duoc.cl`, `@profesor.duoc.cl` y `@gmail.com`
+- **Contraseña:** entre 4 y 10 caracteres
+- **RUN:** sin puntos ni guion, entre 7 y 9 caracteres, con validación real del dígito verificador (módulo 11)
+- **Contacto:** nombre requerido (máx. 100), comentario requerido (máx. 500) con contador en vivo
+- **Carrito:** no permite superar el stock disponible de cada producto
+
+---
 ## Catálogo Detallado de Productos
 
 | Código | Producto | Categoría | Precio | Stock | Descripción Destacada |
@@ -48,30 +104,6 @@ Provenientes de granjas locales dedicadas a la producción responsable. Ofrecemo
 | **PO001** | Miel Orgánica | Productos Orgánicos | $5,000 CLP / 500g | 50 frascos | Miel pura producida por apicultores locales. |
 | **PO003** | Quinua Orgánica | Productos Orgánicos | Consultar | En Stock | Grano ancestral con alto contenido proteico. |
 | **PL001** | Leche Entera | Productos Lácteos | Consultar | En Stock | Leche fresca proveniente de granjas locales. |
-
----
-
-## Stack Tecnológico
-
-- **Estructura:** HTML5 semántico.
-- **Estilos:** CSS3.
-- **Lógica:** JavaScript Vanilla para manejo de validaciones.
-
----
-
-## Estructura del Proyecto
-
-```text
-HuertoHogar/
-├── css/
-│   └── style.css
-├── js/
-│   └── script.js
-├── assets/
-│   └── img/
-├── index.html
-└── README.md
-```
 
 ---
 
@@ -102,3 +134,18 @@ HuertoHogar/
 </table>
 </div>
 
+---
+
+## 📄 Licencia
+
+Este proyecto fue desarrollado con fines **educativos** como parte de la asignatura de Fullstack en DuocUC.
+
+<div align="center">
+
+**Hecho con ❤️ para DuocUC**
+
+<p>
+<img src="https://img.shields.io/badge/FULLSTACK-2026-FFC20E?style=for-the-badge">
+</p>
+
+</div>
