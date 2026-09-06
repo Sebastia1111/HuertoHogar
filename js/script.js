@@ -1,3 +1,30 @@
+(function(){
+  const fila = document.querySelector('.tarjetas-fila');
+  if(!fila) return;
+  let x0=0, y0=0, s0=0, eje=null;
+
+  window.addEventListener('touchstart', function(e){
+    if(!fila.contains(e.target)) return;
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    s0 = fila.scrollLeft; eje = null;
+  }, {capture:true, passive:true});
+
+  window.addEventListener('touchmove', function(e){
+    if(!fila.contains(e.target)) return;
+    const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+    if(!eje){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      eje = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if(eje !== 'x') return;
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    fila.scrollLeft = s0 - dx;
+  }, {capture:true, passive:false});
+
+  window.addEventListener('touchend', function(){ eje = null; }, {capture:true, passive:true});
+})();
+
 // formatos de precio aca en chile
 const fmt = n => '$' + n.toLocaleString('es-CL');
 
@@ -831,25 +858,3 @@ function iniciar(){
 }
 
 iniciar();
-
-
-/* esto a ver si me sirve en el scroll de las tarjetas */
-(function(){
-  const fila = document.querySelector('.tarjetas-fila');
-  if(!fila) return;
-  const nav = document.createElement('div');
-  nav.className = 'carrusel-nav';
-  nav.innerHTML = '<button class="btn-flecha" aria-label="Anterior">‹</button><button class="btn-flecha" aria-label="Siguiente">›</button>';
-  fila.before(nav);
-  const [prev, next] = nav.querySelectorAll('.btn-flecha');
-  const paso = () => Math.max(fila.clientWidth * .7, 180);
-  prev.addEventListener('click', () => fila.scrollBy({left:-paso(), behavior:'smooth'}));
-  next.addEventListener('click', () => fila.scrollBy({left:paso(), behavior:'smooth'}));
-  const actualizar = () => {
-    prev.disabled = fila.scrollLeft < 10;
-    next.disabled = fila.scrollLeft > fila.scrollWidth - fila.clientWidth - 10;
-  };
-  fila.addEventListener('scroll', actualizar, {passive:true});
-  window.addEventListener('resize', actualizar);
-  actualizar();
-})();
