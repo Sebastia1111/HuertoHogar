@@ -19,7 +19,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 body.bloqueado{overflow:hidden}
 
 /*esto me sirve para el responsivo*/
-html{overflow-x:clip}
+html{overflow-x:hidden}
 body{overflow-x:clip;overflow-wrap:break-word}
 img,svg{max-width:100%}
 
@@ -120,7 +120,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 20px;min-height:60vh}
 /* tarjetas de informacion */
 .inicio-superior{display:flex;gap:22px;align-items:flex-start;margin-bottom:44px}
 .panel-info{flex:1;min-width:0}
-.tarjetas-fila{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 4px 14px;scrollbar-width:thin}
+.tarjetas-fila{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:4px 4px 14px;scroll-padding-left:4px;scrollbar-width:thin}
 .tarjetas-fila::-webkit-scrollbar{height:8px}
 .tarjetas-fila::-webkit-scrollbar-thumb{background:var(--borde-fuerte);border-radius:8px}
 .tarjeta-info{min-width:200px;max-width:200px;flex:0 0 auto;scroll-snap-align:start;background:var(--blanco);border:1px solid var(--borde);border-radius:var(--radio);padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;transition:transform .25s,box-shadow .25s,border-color .25s}
@@ -308,7 +308,7 @@ footer ul a:hover{color:#fff}
   .hero-botones .btn{flex:1;min-width:130px}
 
   .inicio-superior{gap:16px;margin-bottom:34px}
-  .tarjetas-fila{gap:10px;padding:2px 2px 12px;scroll-padding-left:2px;-webkit-overflow-scrolling:touch}
+  .tarjetas-fila{gap:10px;padding:2px 2px 12px;scroll-padding-left:2px}
   .tarjeta-info{min-width:158px;max-width:158px;padding:14px;border-radius:14px;gap:2px}
   .tarjeta-info .icono{width:38px;height:38px;font-size:19px;border-radius:10px}
   .tarjeta-info strong{font-size:13.5px}
@@ -369,3 +369,10 @@ footer ul a:hover{color:#fff}
   .tarjeta-info{min-width:146px;max-width:146px}
   .panel-filtros{grid-template-columns:1fr}
 }
+
+
+/* el scroll de las tarjetas, a ver si funciona en telefono */
+.carrusel-nav{display:flex;gap:8px;justify-content:flex-end;margin:0 0 8px}
+.btn-flecha{width:38px;height:38px;border:1.5px solid var(--borde-fuerte);border-radius:50%;background:var(--blanco);font-size:20px;font-weight:700;color:var(--texto);display:grid;place-items:center;line-height:1;padding-bottom:2px;transition:border-color .2s,color .2s,opacity .2s}
+.btn-flecha:hover{border-color:var(--verde);color:var(--verde)}
+.btn-flecha:disabled{opacity:.35}
