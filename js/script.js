@@ -122,8 +122,8 @@ const REGIONES = [
 
 // cuentas base para probar los roles, el resto se crea por registro
 const USUARIOS_BASE = [
-  {correo:'admin@duoc.cl', clave:'admin123', nombre:'Administrador', tipo:'Administrador'},
-  {correo:'vendedor@duoc.cl', clave:'vend123', nombre:'Vendedor', tipo:'Vendedor'}
+  {correo:'admin@huertohogar.cl', clave:'admin123', nombre:'Administrador', tipo:'Administrador'},
+  {correo:'vendedor@huertohogar.cl', clave:'vend123', nombre:'Vendedor', tipo:'Vendedor'}
 ];
 
 const $ = id => document.getElementById(id);
@@ -588,14 +588,15 @@ function renderCategorias(){
 
 /* ------- validaciones ------- */
 
-const DOMINIOS_PERMITIDOS = ['@duoc.cl','@profesor.duoc.cl','@gmail.com'];
+/* esta sirve harto para el tema de validar el correo */
+const DOMINIOS_PERMITIDOS = ['@huertohogar.cl','@gmail.com'];
 
 function chequearCorreo(valor){
   const v = valor.trim().toLowerCase();
   if(!v) return 'el correo es requerido';
   if(v.length > 100) return 'máximo 100 caracteres';
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'revisa el formato del correo';
-  if(!DOMINIOS_PERMITIDOS.some(d => v.endsWith(d))) return 'solo aceptamos @duoc.cl, @profesor.duoc.cl o @gmail.com';
+  if(!DOMINIOS_PERMITIDOS.some(d => v.endsWith(d))) return 'solo aceptamos @gmail.com';
   return '';
 }
 
