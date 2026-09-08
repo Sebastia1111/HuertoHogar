@@ -75,8 +75,8 @@ También puedes desplegarlo gratis con **GitHub Pages** desde `Settings → Page
 
 | Correo | Contraseña | Rol |
 | ------ | ---------- | --- |
-| `admin@duoc.cl` | `admin123` | Administrador |
-| `vendedor@duoc.cl` | `vend123` | Vendedor |
+| `admin@huertohogar.cl` | `admin123` | Administrador |
+| `vendedor@huertohogar.cl` | `vend123` | Vendedor |
 
 Para probar como **Cliente**, simplemente crea una cuenta desde la vista de registro.
 
