@@ -402,3 +402,24 @@ footer ul a:hover{color:#fff}
   .marcador b{font-size:10px;padding:1px 5px}
   .marcador i{width:10px;height:10px;border-width:2px}
 }
+
+
+
+/* precio con descuento duoc */
+.precio-antes{font-size:12px;color:var(--muted);font-weight:400;margin-left:4px}
+
+/* panel admin de stock */
+.panel-admin{background:var(--blanco);border:1px solid var(--borde);border-radius:var(--radio);padding:18px}
+.admin-fila{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--borde)}
+.admin-fila:last-child{border-bottom:none}
+.admin-fila .mini{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:22px;flex-shrink:0}
+.admin-info{flex:1;min-width:0;display:flex;flex-direction:column}
+.admin-info small{color:var(--muted)}
+.admin-stock{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.admin-stock input{width:84px;padding:9px;border:1.5px solid var(--borde-fuerte);border-radius:10px;font:inherit;text-align:center}
+.admin-stock input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px rgba(58,125,68,.15)}
+
+@media (max-width:620px){
+  .admin-fila{flex-wrap:wrap}
+  .admin-stock{width:100%;justify-content:flex-end}
+}
