@@ -142,13 +142,40 @@ filtroOrden=$('filtroOrden'), contadorResultados=$('contadorResultados'), btnLim
 categoriasGrid=$('categoriasGrid'), listaBlogs=$('listaBlogs'), blogDetalle=$('blogDetalle'),
 productoDetalle=$('productoDetalle'), formIngreso=$('formIngreso'), formRegistro=$('formRegistro'),
 formContacto=$('formContacto'), contactoComentario=$('contactoComentario'), contadorComentario=$('contadorComentario'),
-regRegion=$('regRegion'), regComuna=$('regComuna'), anioFooter=$('anioFooter');
+regRegion=$('regRegion'), regComuna=$('regComuna'), anioFooter=$('anioFooter'),
+panelAdmin=$('panelAdmin');
 
 // estado del carrito y la sesion, todo queda guardado por si el usuario cierra el navegador
 let carrito = leerStorage('hh_carrito', []);
 let sesion = leerStorage('hh_sesion', null);
 let filtros = {texto:'', categoria:'todas', orden:'relevancia'};
 let avisoTimer;
+
+
+/*  stock persistente y descuento duoc  */
+
+function stockDe(codigo){
+  const stocks = leerStorage('hh_stocks', {});
+  const p = PRODUCTOS.find(x => x.codigo === codigo);
+  return stocks[codigo] !== undefined ? stocks[codigo] : (p ? p.stock : 0);
+}
+
+function guardarStock(codigo, valor){
+  const stocks = leerStorage('hh_stocks', {});
+  stocks[codigo] = valor;
+  localStorage.setItem('hh_stocks', JSON.stringify(stocks));
+}
+
+// descuento del 20% para correos institucionales duoc
+function tieneDescuentoDuoc(){
+  return !!sesion && sesion.correo.toLowerCase().endsWith('@duocuc.cl');
+}
+
+function precioConDescuento(p){
+  return tieneDescuentoDuoc() ? Math.round(p.precio * 0.8) : p.precio;
+}
+
+
 
 function aviso(mensaje){
   const el = $('aviso');
@@ -173,8 +200,9 @@ function agregarAlCarrito(codigo, cantidad){
   if(!p) return false;
   const item = carrito.find(i => i.codigo === codigo);
   const nueva = (item ? item.cantidad : 0) + cantidad;
-  if(nueva > p.stock){
-    aviso('solo hay ' + p.stock + ' unidades de ' + p.nombre);
+  const stock = stockDe(codigo);
+  if(nueva > stock){
+    aviso(stock === 0 ? 'sin stock de ' + p.nombre : 'solo hay ' + stock + ' unidades de ' + p.nombre);
     return false;
   }
   if(item) item.cantidad = nueva;
@@ -190,7 +218,7 @@ function cambiarCantidad(codigo, delta){
   if(!item) return;
   const p = PRODUCTOS.find(x => x.codigo === codigo);
   const nueva = item.cantidad + delta;
-  if(nueva > p.stock){
+  if(nueva > stockDe(codigo)){
     aviso('no hay más stock disponible de ' + p.nombre);
     return;
   }
@@ -213,7 +241,7 @@ function quitarDelCarrito(codigo){
 function totalDelCarrito(){
   return carrito.reduce((suma, i) => {
     const p = PRODUCTOS.find(x => x.codigo === i.codigo);
-    return suma + (p ? p.precio * i.cantidad : 0);
+    return suma + (p ? precioConDescuento(p) * i.cantidad : 0);
   }, 0);
 }
 
@@ -228,12 +256,13 @@ function renderCarrito(){
   } else {
     itemsCarrito.innerHTML = carrito.map(i => {
       const p = PRODUCTOS.find(x => x.codigo === i.codigo);
+      const precio = precioConDescuento(p);
       return `
       <div class="item-carrito" data-codigo="${p.codigo}">
         <figure class="mini cat-${p.categoria}">${p.emoji}</figure>
         <div class="item-info">
           <h4>${p.nombre}</h4>
-          <p class="precio">${fmt(p.precio)}</p>
+          <p class="precio">${fmt(precio)}${precio !== p.precio ? ` <s class="precio-antes">${fmt(p.precio)}</s>` : ''}</p>
           <div class="item-controles">
             <button class="btn-step" data-accion="restar">−</button>
             <span>${i.cantidad}</span>
@@ -241,7 +270,7 @@ function renderCarrito(){
             <button class="btn-quitar" data-accion="quitar">quitar</button>
           </div>
         </div>
-        <strong>${fmt(p.precio * i.cantidad)}</strong>
+        <strong>${fmt(precio * i.cantidad)}</strong>
       </div>`;
     }).join('');
   }
@@ -289,9 +318,12 @@ btnFinalizarCompra.addEventListener('click', () => {
     estado: 'pendiente'
   });
   localStorage.setItem('hh_pedidos', JSON.stringify(pedidos));
+  // descontar el stock real de cada producto comprado
+  carrito.forEach(i => guardarStock(i.codigo, Math.max(0, stockDe(i.codigo) - i.cantidad)));
   carrito = [];
   guardarCarrito();
   renderCarrito();
+  renderCatalogo();
   cerrarCarrito();
   aviso('¡pedido ' + numero + ' recibido! te avisaremos cuando esté en camino');
 });
@@ -453,17 +485,23 @@ function renderCatalogo(){
     grillaProductos.innerHTML = '<div class="sin-resultados">🧐 no encontramos productos con esos filtros.<br>prueba con otra búsqueda o limpia los filtros.</div>';
     return;
   }
-  grillaProductos.innerHTML = lista.map(p => `
+  grillaProductos.innerHTML = lista.map(p => {
+    const precio = precioConDescuento(p);
+    const stock = stockDe(p.codigo);
+    return `
     <article class="tarjeta-producto" data-codigo="${p.codigo}">
       <figure class="cat-${p.categoria}">${p.emoji}</figure>
       <div class="tarjeta-cuerpo">
         <span class="codigo">${p.codigo}</span>
         <h3 class="nombre-producto">${p.nombre}</h3>
-        <p class="precio">${fmt(p.precio)} <small style="font-weight:400;color:var(--muted)">/ ${p.unidad}</small></p>
-        <p class="stock-mini">${p.stock} en stock</p>
-        <button class="btn btn-primario btn-anadir">añadir</button>
+        <p class="precio">${fmt(precio)}${precio !== p.precio ? ` <s class="precio-antes">${fmt(p.precio)}</s>` : ''} <small style="font-weight:400;color:var(--muted)">/ ${p.unidad}</small></p>
+        <p class="stock-mini">${stock === 0 ? 'sin stock' : stock + ' en stock'}</p>
+        ${stock === 0
+          ? '<button class="btn btn-borde" disabled>sin stock</button>'
+          : '<button class="btn btn-primario btn-anadir">añadir</button>'}
       </div>
-    </article>`).join('');
+    </article>`;
+  }).join('');
 }
 
 grillaProductos.addEventListener('click', e => {
@@ -499,6 +537,8 @@ function renderProducto(codigo){
     return;
   }
   const cat = CATEGORIAS.find(c => c.id === p.categoria);
+  const precio = precioConDescuento(p);
+  const stock = stockDe(p.codigo);
   productoDetalle.innerHTML = `
     <a class="volver" href="#/inicio" data-scroll="catalogo">‹ volver al catálogo</a>
     <article class="detalle-producto">
@@ -507,17 +547,18 @@ function renderProducto(codigo){
         <span class="etiqueta">${cat.nombre}</span>
         <h1>${p.nombre}</h1>
         <span class="codigo">código ${p.codigo}</span>
-        <p class="precio-detalle">${fmt(p.precio)} <small>por ${p.unidad}</small></p>
+        <p class="precio-detalle">${fmt(precio)} <small>por ${p.unidad}</small></p>
+        ${precio !== p.precio ? `<span class="etiqueta">🎓 20% dcto. duoc — antes ${fmt(p.precio)}</span>` : ''}
         <p class="descripcion">${p.descripcion}</p>
         ${p.origen ? `<p class="origen"><strong>origen:</strong> ${p.origen}</p>` : ''}
-        <p class="stock-detalle">stock disponible: <strong>${p.stock}</strong></p>
+        <p class="stock-detalle">stock disponible: <strong>${stock}</strong></p>
         <div class="compra">
           <div class="cantidad-controles">
             <button class="btn-cant" data-accion="menos">−</button>
-            <input id="cantidadProducto" type="number" min="1" max="${p.stock}" value="1">
+            <input id="cantidadProducto" type="number" min="1" max="${Math.max(stock, 1)}" value="1" ${stock === 0 ? 'disabled' : ''}>
             <button class="btn-cant" data-accion="mas">+</button>
           </div>
-          <button class="btn btn-primario" data-accion="agregar">añadir al carrito</button>
+          <button class="btn btn-primario" data-accion="agregar" ${stock === 0 ? 'disabled' : ''}>añadir al carrito</button>
         </div>
         <small class="error-suave" id="errorCantidad"></small>
       </div>
@@ -528,7 +569,7 @@ productoDetalle.addEventListener('click', e => {
   const btn = e.target.closest('button[data-accion]');
   if(!btn) return;
   const codigo = location.hash.replace('#/','').split('/')[1];
-  const p = PRODUCTOS.find(x => x.codigo === codigo);
+  const stock = stockDe(codigo);
   const input = $('cantidadProducto');
   const error = $('errorCantidad');
   let cantidad = parseInt(input.value, 10) || 0;
@@ -537,12 +578,12 @@ productoDetalle.addEventListener('click', e => {
     input.value = Math.max(1, cantidad - 1);
     error.textContent = '';
   } else if(btn.dataset.accion === 'mas'){
-    if(cantidad >= p.stock){ error.textContent = 'no hay más stock disponible'; return; }
+    if(cantidad >= stock){ error.textContent = 'no hay más stock disponible'; return; }
     input.value = cantidad + 1;
     error.textContent = '';
   } else if(btn.dataset.accion === 'agregar'){
     if(cantidad < 1){ error.textContent = 'ingresa una cantidad válida'; return; }
-    if(cantidad > p.stock){ error.textContent = 'solo hay ' + p.stock + ' unidades disponibles'; return; }
+    if(cantidad > stock){ error.textContent = 'solo hay ' + stock + ' unidades disponibles'; return; }
     if(agregarAlCarrito(codigo, cantidad)) error.textContent = '';
   }
 });
@@ -589,14 +630,16 @@ function renderCategorias(){
 /* ------- validaciones ------- */
 
 /* esta sirve harto para el tema de validar el correo */
-const DOMINIOS_PERMITIDOS = ['@huertohogar.cl','@gmail.com'];
+const DOMINIOS_PERMITIDOS = ['@huertohogar.cl','@gmail.com','@duocuc.cl'];
+
+
 
 function chequearCorreo(valor){
   const v = valor.trim().toLowerCase();
   if(!v) return 'el correo es requerido';
   if(v.length > 100) return 'máximo 100 caracteres';
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'revisa el formato del correo';
-  if(!DOMINIOS_PERMITIDOS.some(d => v.endsWith(d))) return 'solo aceptamos @gmail.com';
+    if(!DOMINIOS_PERMITIDOS.some(d => v.endsWith(d))) return 'solo aceptamos @gmail.com o @duocuc.cl';
   return '';
 }
 
@@ -678,6 +721,7 @@ function actualizarSesion(){
     zonaSesion.innerHTML = `
       <p class="saludo-menu">hola, <strong>${esc(sesion.nombre)}</strong></p>
       <p class="rol-menu">${esc(sesion.tipo)}</p>
+      ${sesion.tipo === 'Administrador' ? '<a class="btn btn-borde btn-block" href="#/admin">📦 gestionar stock</a>' : ''}
       <button id="btnSalirMenu" class="btn btn-borde btn-block">cerrar sesión</button>`;
     $('btnSalirMenu').addEventListener('click', cerrarSesion);
   } else {
@@ -687,11 +731,19 @@ function actualizarSesion(){
   }
 }
 
+// refresca las vistas donde se muestran precios y stock
+function refrescarVistas(){
+  renderCatalogo();
+  renderCarrito();
+  if(location.hash.startsWith('#/producto/')) renderProducto(location.hash.replace('#/','').split('/')[1]);
+}
+
 function iniciarSesion(usuario){
   sesion = {nombre: usuario.nombre, correo: usuario.correo, tipo: usuario.tipo};
   localStorage.setItem('hh_sesion', JSON.stringify(sesion));
   actualizarSesion();
-  aviso('sesión iniciada, ¡hola ' + usuario.nombre + '!');
+  refrescarVistas();
+  aviso('sesión iniciada, ¡hola ' + usuario.nombre + '!' + (tieneDescuentoDuoc() ? ' 🎓 descuento duoc del 20% activo' : ''));
   location.hash = '#/inicio';
   navegar();
 }
@@ -700,10 +752,10 @@ function cerrarSesion(){
   sesion = null;
   localStorage.removeItem('hh_sesion');
   actualizarSesion();
+  refrescarVistas();
   cerrarMenuUsuario();
   aviso('sesión cerrada');
 }
-
 btnCerrarSesion.addEventListener('click', cerrarSesion);
 
 /* ------- regiones y comunas ------- */
@@ -815,6 +867,48 @@ formContacto.addEventListener('submit', e => {
   aviso('¡mensaje enviado! te responderemos pronto 🌱');
 });
 
+
+
+/* ------- panel admin: gestion de stock ------- */
+
+function renderAdmin(){
+  if(!sesion || sesion.tipo !== 'Administrador'){
+    panelAdmin.innerHTML = '<div class="sin-resultados">🔒 esta sección es solo para el administrador. <a href="#/ingreso" style="color:var(--verde);font-weight:700">iniciar sesión</a></div>';
+    return;
+  }
+  panelAdmin.innerHTML = `
+    <p class="sub">edita el stock disponible de cada producto y guarda los cambios.</p>
+    <div class="admin-lista">
+      ${PRODUCTOS.map(p => `
+        <div class="admin-fila" data-codigo="${p.codigo}">
+          <figure class="mini cat-${p.categoria}">${p.emoji}</figure>
+          <div class="admin-info">
+            <strong>${p.nombre}</strong>
+            <small>${p.codigo}</small>
+          </div>
+          <div class="admin-stock">
+            <input type="number" min="0" value="${stockDe(p.codigo)}" aria-label="stock de ${p.nombre}">
+            <button class="btn btn-primario" data-accion="guardar-stock">guardar</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+panelAdmin.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-accion="guardar-stock"]');
+  if(!btn) return;
+  const fila = btn.closest('.admin-fila');
+  const codigo = fila.dataset.codigo;
+  const valor = parseInt(fila.querySelector('input').value, 10);
+  if(isNaN(valor) || valor < 0){ aviso('ingresa un stock válido (0 o más)'); return; }
+  guardarStock(codigo, valor);
+  renderCatalogo();
+  renderAdmin();
+  aviso('stock de ' + PRODUCTOS.find(p => p.codigo === codigo).nombre + ' actualizado a ' + valor);
+});
+
+
+
 /* ------- router por hash ------- */
 
 function navegar(){
@@ -829,6 +923,7 @@ function navegar(){
 
   if(ruta === 'blog') renderBlog(partes[1]);
   if(ruta === 'producto') renderProducto(partes[1]);
+  if(ruta === 'admin') renderAdmin();
 
   let destino = ruta;
   if(!$('vista-' + destino)) destino = 'inicio';
@@ -859,3 +954,4 @@ function iniciar(){
 }
 
 iniciar();
+
