@@ -16,7 +16,7 @@ export const Input = ({
 //placeholder: EL texto gris de ayuda que se ve al estar vacio
 //required: indica si el campo es obligatorio(true o false)
     return (
-        <input
+        <Input
             type = {type}
             id = {name}
             name = {name}
