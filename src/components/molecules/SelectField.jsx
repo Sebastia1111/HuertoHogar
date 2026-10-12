@@ -1,3 +1,5 @@
+import { Select } from "../atoms/Select";
+
 export  const SelectField = ({
 
     label,
@@ -5,7 +7,7 @@ export  const SelectField = ({
     value,
     onChange,
     options = [],
-    disable = false,
+    disabled = false,
     error, 
     placeholder = 'Selecciona una opcion'
 
@@ -17,25 +19,15 @@ export  const SelectField = ({
                     {label}
                 </label>
             )}
-            <select
-                id = {name}
+            <Select
                 name = {name}
                 value ={value}
-                onChange = {onChange}
-                diable = {disable}
-                className = "form-select"
-            
-            >
-                <option value = "">{placeholder}</option>
-                {options.map((opt) =>(
-                    <option key = {opt.value || opt}value ={opt.value || opt }>
-                        {opt.label || opt}
-                    </option>
-                ))}
-
-            </select>
-            {error && <small className = "text-danger d-block mt-1 fw-semibold">{error}</small>}
-
+                onChange={onChange}
+                options={options}
+                disabled={disabled}
+                placeholder={placeholder}
+            />
+            {error && <small className="text-danger d-block mt-1 fw-semibold">{error}</small>}
         </div>
     );
 };

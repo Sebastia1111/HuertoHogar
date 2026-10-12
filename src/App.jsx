@@ -1,12 +1,14 @@
 import './styles/style.css'
+import {LoginForm} from './components/organisms/LoginForm';
 
-export default function App(){
+function App(){
   return (
-    <div>
-      <h1>HuertoHogar Listo</h1>
-      <p>Estilos e imagenes vinculados correctamente</p>
+    <div className='container mt-5'>
+      <LoginForm/>
     </div>
   );
 
 
 }
+
+export default App;

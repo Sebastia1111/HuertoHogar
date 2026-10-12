@@ -29,10 +29,10 @@ export const FormField = ({
                 required = {required}
             />
             {/* Si mandamos una pista, la dibuja abajo */}
-            {pista && <small className ="pista">{pista}</small>}
+            {pista && <small className = "form-text text-muted d-block mt-1">{pista}</small>}
 
             {/* Si hay un error, lo dibuja abajo */}
-            {error && <small className= "msg-error">{error}</small>}
+            {error && <small className = "text-danger d-block mt-1 fw-semibold">{error}</small>}
         </div>
     );
 };
