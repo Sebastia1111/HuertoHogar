@@ -2,7 +2,7 @@
 import { ProductCard } from '../molecules/ProductCard';
 import { Heading, Text } from '../atoms/Typography';
 
-export const ProductGrid = ({ productos, onAddToCart }) => {
+export const ProductGrid = ({ productos, sesion, stocks, onAddToCart }) => {
   if (productos.length === 0) {
     return (
       <div className="text-center py-5 border rounded bg-white w-100">
@@ -16,8 +16,8 @@ export const ProductGrid = ({ productos, onAddToCart }) => {
   return (
     <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
       {productos.map((prod) => (
-        <div key={prod.id} className="col">
-          <ProductCard producto={prod} onAddToCart={onAddToCart} />
+        <div key={prod.codigo || prod.id} className="col">
+          <ProductCard producto={prod} sesion={sesion} stocks={stocks} onAddToCart={onAddToCart} />
         </div>
       ))}
     </div>

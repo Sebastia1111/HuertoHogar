@@ -1,5 +1,6 @@
 // src/pages/AboutPage.jsx
 import { Heading, Text } from '../components/atoms/Typography';
+import mapaChile from '../assets/img/mapa-chile.png';
 
 const CATEGORIAS = [
   { id: 'frutas', nombre: 'Frutas frescas', emoji: '🍓', descripcion: 'De la cosecha directa a tu hogar: frutas de temporada cultivadas en su punto óptimo de madurez.' },
@@ -8,14 +9,24 @@ const CATEGORIAS = [
   { id: 'lacteos', nombre: 'Productos lácteos', emoji: '🥛', descripcion: 'Leches y yogures de granjas locales que producen de forma responsable.' }
 ];
 
+const CIUDADES = [
+  { nombre: 'Santiago', region: 'Región Metropolitana', emoji: '📍' },
+  { nombre: 'Puente Alto', region: 'Región Metropolitana', emoji: '📍' },
+  { nombre: 'Viña del Mar', region: 'Región de Valparaíso', emoji: '📍' },
+  { nombre: 'Valparaíso', region: 'Región de Valparaíso', emoji: '📍' },
+  { nombre: 'Concepción', region: 'Región del Biobío', emoji: '📍' }
+];
+
 export const AboutPage = () => {
   return (
     <div className="container my-5">
+      {/* Encabezado */}
       <div className="text-center mb-5">
         <Heading level={1} className="fw-bold text-success">Nosotros</Heading>
         <Text className="text-muted fs-5">La historia detrás de cada despacho.</Text>
       </div>
 
+      {/* Tarjetas Historia, Misión y Visión */}
       <div className="row g-4 mb-5">
         <div className="col-md-4">
           <div className="p-4 border rounded-4 bg-white h-100 shadow-sm">
@@ -58,22 +69,54 @@ export const AboutPage = () => {
       </div>
 
       {/* Mapa de Despacho */}
-      <Heading level={2} className="fs-4 fw-bold text-success mb-3 text-center">Zonas de despacho</Heading>
-      <div className="p-4 border rounded-4 bg-white shadow-sm text-center mb-5">
-        <div className="mapa-contenedor mb-3">
-          <img src="assets/img/mapa-chile.png" alt="Mapa de Chile con despacho" className="img-fluid" />
-          <span className="marcador izq m-vina"><i></i><b>Viña del Mar</b></span>
-          <span className="marcador izq m-valpo"><i></i><b>Valparaíso</b></span>
-          <span className="marcador m-santiago"><i></i><b>Santiago</b></span>
-          <span className="marcador m-puente"><i></i><b>Puente Alto</b></span>
-          <span className="marcador izq m-conce"><i></i><b>Concepción</b></span>
+    <Heading level={2} className="fs-4 fw-bold text-success mb-3 text-center">
+      Zonas de despacho
+    </Heading>
+
+    <div className="p-4 border rounded-4 bg-white shadow-sm mb-5 text-center">
+      <div className="mapa-wrapper mb-3">
+        <div className="mapa-seccion">
+          <img src={mapaChile} alt="Mapa de Chile" className="mapa-img" />
+
+          {/* LADO IZQUIERDO: Texto a la izquierda, punto verde a la derecha */}
+          <span className="marcador pos-vina">
+            <b>Viña del Mar</b><i></i>
+          </span>
+          <span className="marcador pos-valpo">
+            <b>Valparaíso</b><i></i>
+          </span>
+          <span className="marcador pos-conce">
+            <b>Concepción</b><i></i>
+          </span>
+
+          {/* LADO DERECHO: Punto verde a la izquierda, texto a la derecha */}
+          <span className="marcador pos-santiago">
+            <i></i><b>Santiago</b>
+          </span>
+          <span className="marcador pos-puente">
+            <i></i><b>Puente Alto</b>
+          </span>
         </div>
-        <Text className="text-muted small mb-0">
-          Hacemos envíos a estas 5 ciudades, directo del campo a tu hogar.
-        </Text>
       </div>
 
-      {/* Equipo */}
+      <Text className="text-muted small mb-3">
+        Hacemos envíos a estas 5 ciudades, directo del campo a tu hogar.
+      </Text>
+
+      {/* Resumen de Ciudades */}
+      <div className="row row-cols-2 row-cols-md-5 g-2 text-center pt-3 border-top">
+        {CIUDADES.map((c, i) => (
+          <div key={i} className="col">
+            <div className="p-2 rounded-3 bg-light border">
+              <span className="fw-bold d-block text-dark small">{c.emoji} {c.nombre}</span>
+              <small className="text-muted extra-small">{c.region}</small>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+      {/* Equipo de Desarrollo */}
       <Heading level={2} className="fs-4 fw-bold text-success mb-3 text-center">Equipo de desarrollo</Heading>
       <ul className="list-group shadow-sm mx-auto" style={{ maxWidth: '500px' }}>
         <li className="list-group-item"><strong>Sebastián Orellana</strong> — Desarrollo Frontend</li>

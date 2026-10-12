@@ -7,7 +7,7 @@ import { InfoSection } from '../components/organisms/InfoSection';
 import { Heading, Text } from '../components/atoms/Typography';
 import { Button } from '../components/atoms/Button';
 
-export const HomePage = ({ onAddToCart }) => {
+export const HomePage = ({ onAddToCart, sesion, stocks }) => {
   const [texto, setTexto] = useState('');
   const [categoria, setCategoria] = useState('todas');
   const [orden, setOrden] = useState('relevancia');
@@ -37,7 +37,6 @@ export const HomePage = ({ onAddToCart }) => {
 
   return (
     <div>
-      {/* HERO */}
       <section className="bg-success-subtle py-5 px-3 rounded-3 mb-5 text-center text-md-start">
         <div className="container">
           <div className="row align-items-center">
@@ -65,12 +64,10 @@ export const HomePage = ({ onAddToCart }) => {
         </div>
       </section>
 
-      {/* TARJETAS INFO */}
       <div className="container">
         <InfoSection />
       </div>
 
-      {/* CATÁLOGO */}
       <section id="catalogo" className="container my-5">
         <div className="text-center mb-4">
           <Heading level={2} className="fw-bold text-success">Catálogo</Heading>
@@ -92,7 +89,12 @@ export const HomePage = ({ onAddToCart }) => {
           </div>
 
           <div className="col-lg-9">
-            <ProductGrid productos={productosFiltrados} onAddToCart={onAddToCart} />
+            <ProductGrid
+              productos={productosFiltrados}
+              sesion={sesion}
+              stocks={stocks}
+              onAddToCart={onAddToCart}
+            />
           </div>
         </div>
       </section>

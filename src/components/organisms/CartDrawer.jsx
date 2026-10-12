@@ -9,7 +9,8 @@ export const CartDrawer = ({
   onUpdateQuantity,
   onClearCart,
   sesion,
-  onMostrarAviso
+  onMostrarAviso,
+  onFinalizarCompra
 }) => {
   if (!isOpen) return null;
 
@@ -24,15 +25,13 @@ export const CartDrawer = ({
       return;
     }
 
-    // Validar si hay usuario logueado
     if (!sesion) {
       onClose();
       onMostrarAviso('Inicia sesión para finalizar tu compra');
-      window.location.hash = '#/ingreso';
+      window.location.assing('#/ingreso');
       return;
     }
 
-    // Generar pedido simulado
     const pedidos = JSON.parse(localStorage.getItem('hh_pedidos') || '[]');
     const numPedido = 'HH-' + (1001 + pedidos.length);
 
@@ -46,6 +45,10 @@ export const CartDrawer = ({
     });
 
     localStorage.setItem('hh_pedidos', JSON.stringify(pedidos));
+
+    if (onFinalizarCompra) {
+      onFinalizarCompra(cartItems);
+    }
 
     onClearCart();
     onClose();

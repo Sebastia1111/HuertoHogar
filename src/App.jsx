@@ -17,6 +17,7 @@ import { AdminPage } from './pages/AdminPage';
 import { BlogsPage } from './pages/BlogsPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
 
+import { PRODUCTOS } from './data/productos';
 import { leerStorage, guardarStorage } from './utils/storage';
 
 export function App() {
@@ -29,6 +30,17 @@ export function App() {
   const [sesion, setSesion] = useState(() => leerStorage('hh_sesion', null));
   const [cartItems, setCartItems] = useState(() => leerStorage('hh_carrito', []));
 
+  // Estado global de stock dinámico
+  const [stocks, setStocks] = useState(() => {
+    const guardado = leerStorage('hh_stocks', null);
+    if (guardado) return guardado;
+    const inicial = {};
+    PRODUCTOS.forEach((p) => {
+      inicial[p.codigo] = p.stock;
+    });
+    return inicial;
+  });
+
   const mostrarAviso = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2800);
@@ -39,6 +51,10 @@ export function App() {
   }, [cartItems]);
 
   useEffect(() => {
+    guardarStorage('hh_stocks', stocks);
+  }, [stocks]);
+
+  useEffect(() => {
     const handleHashChange = () => {
       setCurrentPath(window.location.hash || '#/inicio');
       window.scrollTo(0, 0);
@@ -47,7 +63,31 @@ export function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  const handleUpdateStock = (codigo, nuevoStock) => {
+    setStocks((prev) => ({
+      ...prev,
+      [codigo]: Number(nuevoStock)
+    }));
+  };
+
+  const handleFinalizarCompraStock = (itemsComprados) => {
+    setStocks((prev) => {
+      const nuevos = { ...prev };
+      itemsComprados.forEach((item) => {
+        const actual = nuevos[item.codigo] !== undefined ? nuevos[item.codigo] : item.stock;
+        nuevos[item.codigo] = Math.max(0, actual - item.cantidad);
+      });
+      return nuevos;
+    });
+  };
+
   const handleAddToCart = (producto, cantidad = 1) => {
+    const stockDisp = stocks[producto.codigo] !== undefined ? stocks[producto.codigo] : producto.stock;
+    if (stockDisp <= 0) {
+      mostrarAviso('Producto sin stock disponible');
+      return;
+    }
+
     setCartItems((prev) => {
       const existe = prev.find((item) => item.codigo === producto.codigo);
       if (existe) {
@@ -84,7 +124,14 @@ export function App() {
   const renderPage = () => {
     if (currentPath.startsWith('#/producto/')) {
       const codigo = currentPath.split('/')[2];
-      return <ProductDetailPage codigo={codigo} sesion={sesion} onAddToCart={handleAddToCart} />;
+      return (
+        <ProductDetailPage
+          codigo={codigo}
+          sesion={sesion}
+          stocks={stocks}
+          onAddToCart={handleAddToCart}
+        />
+      );
     }
 
     if (currentPath.startsWith('#/blog/')) {
@@ -93,16 +140,19 @@ export function App() {
     }
 
     switch (currentPath) {
-      case '#/nosotros': return <AboutPage />;
-      case '#/blogs': return <BlogsPage />;
-      case '#/contacto': return <ContactPage onContactSuccess={() => mostrarAviso('¡Mensaje enviado con éxito!')} />;
+      case '#/nosotros':
+        return <AboutPage />;
+      case '#/blogs':
+        return <BlogsPage />;
+      case '#/contacto':
+        return <ContactPage onContactSuccess={() => mostrarAviso('¡Mensaje enviado con éxito!')} />;
       case '#/ingreso':
         return (
           <LoginPage
             onLoginSuccess={(user) => {
               setSesion(user);
               guardarStorage('hh_sesion', user);
-              mostrarAviso(`Sesión iniciada, ¡hola ${user.nombre}!`);
+              mostrarAviso(`Sesión iniciada, ¡hola ${user.nombre || user.correo}!`);
               window.location.hash = '#/inicio';
             }}
           />
@@ -118,9 +168,23 @@ export function App() {
             }}
           />
         );
-      case '#/admin': return <AdminPage sesion={sesion} />;
+      case '#/admin':
+        return (
+          <AdminPage
+            sesion={sesion}
+            stocks={stocks}
+            onUpdateStock={handleUpdateStock}
+          />
+        );
       case '#/inicio':
-      default: return <HomePage onAddToCart={handleAddToCart} sesion={sesion} />;
+      default:
+        return (
+          <HomePage
+            onAddToCart={handleAddToCart}
+            sesion={sesion}
+            stocks={stocks}
+          />
+        );
     }
   };
 
@@ -135,7 +199,13 @@ export function App() {
         onCerrarSesion={handleCerrarSesion}
       />
 
-      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        sesion={sesion}
+        onCerrarSesion={handleCerrarSesion}
+      />
+
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       <CartDrawer
@@ -150,6 +220,7 @@ export function App() {
         }}
         sesion={sesion}
         onMostrarAviso={mostrarAviso}
+        onFinalizarCompra={handleFinalizarCompraStock}
       />
 
       <main className="flex-grow-1">{renderPage()}</main>
