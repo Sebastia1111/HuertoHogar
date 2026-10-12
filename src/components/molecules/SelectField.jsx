@@ -9,7 +9,7 @@ export  const SelectField = ({
     options = [],
     disabled = false,
     error, 
-    placeholder = 'Selecciona una opcion'
+    placeholder
 
 }) =>{
     return (

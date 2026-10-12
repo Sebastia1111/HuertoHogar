@@ -4,7 +4,7 @@ export const Select = ({
   onChange,
   options = [],
   disabled = false,
-  placeholder = 'Selecciona una opción',
+  placeholder,
   className = ''
 }) => {
   return (
@@ -16,7 +16,7 @@ export const Select = ({
       disabled={disabled}
       className={`form-select ${className}`.trim()}
     >
-      <option value="">{placeholder}</option>
+      {placeholder && <option value="">{placeholder}</option>}
       {options.map((opt) => (
         <option key={opt.value || opt} value={opt.value || opt}>
           {opt.label || opt}

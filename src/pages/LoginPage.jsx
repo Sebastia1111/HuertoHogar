@@ -1,10 +1,10 @@
 // src/pages/LoginPage.jsx
 import { LoginForm } from '../components/organisms/LoginForm';
 
-export const LoginPage = () => {
+export const LoginPage = ({ onLoginSuccess }) => {
   return (
     <div className="container my-5">
-      <LoginForm />
+      <LoginForm onSuccess={onLoginSuccess} />
     </div>
   );
 };

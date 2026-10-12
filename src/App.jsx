@@ -1,120 +1,162 @@
-import './styles/style.css'
 // src/App.jsx
 import { useState, useEffect } from 'react';
 import { Header } from './components/organisms/Header';
 import { Footer } from './components/organisms/Footer';
 import { MobileMenu } from './components/organisms/MobileMenu';
 import { CartDrawer } from './components/organisms/CartDrawer';
+import { SearchOverlay } from './components/organisms/SearchOverlay';
+import { Toast } from './components/atoms/Toast';
 
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ProductDetailPage } from './pages/ProductDetailPage';
+import { AdminPage } from './pages/AdminPage';
+import { BlogsPage } from './pages/BlogsPage';
+import { BlogDetailPage } from './pages/BlogDetailPage';
+
+import { leerStorage, guardarStorage } from './utils/storage';
 
 export function App() {
-  // Estado de la ruta actual basado en hash (#/inicio, #/nosotros, etc.)
   const [currentPath, setCurrentPath] = useState(window.location.hash || '#/inicio');
-
-  // Estados de modales/drawers
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
-  // Estado del Carrito de compras
-  const [cartItems, setCartItems] = useState([]);
+  const [sesion, setSesion] = useState(() => leerStorage('hh_sesion', null));
+  const [cartItems, setCartItems] = useState(() => leerStorage('hh_carrito', []));
 
-  // Escuchar cambios de ruta en la URL (#)
+  const mostrarAviso = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 2800);
+  };
+
+  useEffect(() => {
+    guardarStorage('hh_carrito', cartItems);
+  }, [cartItems]);
+
   useEffect(() => {
     const handleHashChange = () => {
       setCurrentPath(window.location.hash || '#/inicio');
-      window.scrollTo(0, 0); // Volver arriba al cambiar de página
+      window.scrollTo(0, 0);
     };
-
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Lógica del Carrito
-  const handleAddToCart = (producto) => {
+  const handleAddToCart = (producto, cantidad = 1) => {
     setCartItems((prev) => {
-      const existe = prev.find((item) => item.id === producto.id);
+      const existe = prev.find((item) => item.codigo === producto.codigo);
       if (existe) {
         return prev.map((item) =>
-          item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
+          item.codigo === producto.codigo ? { ...item, cantidad: item.cantidad + cantidad } : item
         );
       }
-      return [...prev, { ...producto, cantidad: 1 }];
+      return [...prev, { ...producto, cantidad }];
     });
-    setIsCartOpen(true); // Abre el carrito al agregar
+    mostrarAviso(`${producto.nombre} se añadió al carrito 🧺`);
   };
 
-  const handleRemoveFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleUpdateQuantity = (id, nuevaCantidad) => {
+  const handleUpdateQuantity = (codigo, nuevaCantidad) => {
     if (nuevaCantidad <= 0) {
-      handleRemoveFromCart(id);
+      handleRemoveItem(codigo);
       return;
     }
     setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, cantidad: nuevaCantidad } : item))
+      prev.map((i) => (i.codigo === codigo ? { ...i, cantidad: nuevaCantidad } : i))
     );
   };
 
-  const handleClearCart = () => {
-    setCartItems([]);
+  const handleRemoveItem = (codigo) => {
+    setCartItems((prev) => prev.filter((i) => i.codigo !== codigo));
+    mostrarAviso('Producto quitado del carrito');
   };
 
-  const totalCartCount = cartItems.reduce((acc, item) => acc + item.cantidad, 0);
+  const handleCerrarSesion = () => {
+    setSesion(null);
+    localStorage.removeItem('hh_sesion');
+    mostrarAviso('Sesión cerrada');
+  };
 
-  // Renderizado dinámico de la página activa
   const renderPage = () => {
+    if (currentPath.startsWith('#/producto/')) {
+      const codigo = currentPath.split('/')[2];
+      return <ProductDetailPage codigo={codigo} sesion={sesion} onAddToCart={handleAddToCart} />;
+    }
+
+    if (currentPath.startsWith('#/blog/')) {
+      const id = currentPath.split('/')[2];
+      return <BlogDetailPage id={id} />;
+    }
+
     switch (currentPath) {
-      case '#/nosotros':
-        return <AboutPage />;
-      case '#/contacto':
-        return <ContactPage />;
+      case '#/nosotros': return <AboutPage />;
+      case '#/blogs': return <BlogsPage />;
+      case '#/contacto': return <ContactPage onContactSuccess={() => mostrarAviso('¡Mensaje enviado con éxito!')} />;
       case '#/ingreso':
-        return <LoginPage />;
+        return (
+          <LoginPage
+            onLoginSuccess={(user) => {
+              setSesion(user);
+              guardarStorage('hh_sesion', user);
+              mostrarAviso(`Sesión iniciada, ¡hola ${user.nombre}!`);
+              window.location.hash = '#/inicio';
+            }}
+          />
+        );
       case '#/registro':
-        return <RegisterPage />;
+        return (
+          <RegisterPage
+            onRegisterSuccess={(user) => {
+              setSesion(user);
+              guardarStorage('hh_sesion', user);
+              mostrarAviso(`Cuenta creada, ¡bienvenido ${user.nombre}!`);
+              window.location.hash = '#/inicio';
+            }}
+          />
+        );
+      case '#/admin': return <AdminPage sesion={sesion} />;
       case '#/inicio':
-      default:
-        return <HomePage onAddToCart={handleAddToCart} />;
+      default: return <HomePage onAddToCart={handleAddToCart} sesion={sesion} />;
     }
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
-      {/* Cabecera Principal */}
+    <div className="d-flex flex-column min-vh-100">
       <Header
         onOpenMenu={() => setIsMenuOpen(true)}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenSearch={() => alert('Usa el panel de búsqueda especial en el catálogo')}
-        cartCount={totalCartCount}
+        onOpenSearch={() => setIsSearchOpen(true)}
+        cartCount={cartItems.reduce((a, b) => a + b.cantidad, 0)}
+        sesion={sesion}
+        onCerrarSesion={handleCerrarSesion}
       />
 
-      {/* Menú Móvil Desplegable */}
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* Carrito Lateral Desplegable */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
-        onRemoveItem={handleRemoveFromCart}
+        onRemoveItem={handleRemoveItem}
         onUpdateQuantity={handleUpdateQuantity}
-        onClearCart={handleClearCart}
+        onClearCart={() => {
+          setCartItems([]);
+          mostrarAviso('Carrito vaciado');
+        }}
+        sesion={sesion}
+        onMostrarAviso={mostrarAviso}
       />
 
-      {/* Contenido Dinámico de las Páginas */}
       <main className="flex-grow-1">{renderPage()}</main>
-
-      {/* Pie de Página */}
       <Footer />
+      <Toast mensaje={toastMsg} />
     </div>
   );
-};
+}
 
 export default App;

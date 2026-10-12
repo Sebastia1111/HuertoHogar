@@ -1,23 +1,24 @@
 // src/pages/HomePage.jsx
 import { useState } from 'react';
-import { productosIniciales } from '../data/productos';
+import { PRODUCTOS } from '../data/productos';
 import { FilterPanel } from '../components/organisms/FilterPanel';
 import { ProductGrid } from '../components/organisms/ProductGrid';
+import { InfoSection } from '../components/organisms/InfoSection';
 import { Heading, Text } from '../components/atoms/Typography';
 import { Button } from '../components/atoms/Button';
 
 export const HomePage = ({ onAddToCart }) => {
-  // Estados para los filtros del catálogo
   const [texto, setTexto] = useState('');
   const [categoria, setCategoria] = useState('todas');
   const [orden, setOrden] = useState('relevancia');
 
-  // Filtrado y ordenamiento dinámico en tiempo real
-  const productosFiltrados = productosIniciales
+  const listaProductos = PRODUCTOS || [];
+
+  const productosFiltrados = listaProductos
     .filter((prod) => {
       const coincideTexto =
-        prod.nombre.toLowerCase().includes(texto.toLowerCase()) ||
-        prod.id.toLowerCase().includes(texto.toLowerCase());
+        (prod.nombre || '').toLowerCase().includes(texto.toLowerCase()) ||
+        (prod.codigo || '').toLowerCase().includes(texto.toLowerCase());
       const coincideCat = categoria === 'todas' || prod.categoria === categoria;
       return coincideTexto && coincideCat;
     })
@@ -25,7 +26,7 @@ export const HomePage = ({ onAddToCart }) => {
       if (orden === 'precio-asc') return a.precio - b.precio;
       if (orden === 'precio-desc') return b.precio - a.precio;
       if (orden === 'nombre') return a.nombre.localeCompare(b.nombre);
-      return 0; // Relevancia / por defecto
+      return 0;
     });
 
   const handleLimpiarFiltros = () => {
@@ -36,7 +37,7 @@ export const HomePage = ({ onAddToCart }) => {
 
   return (
     <div>
-      {/* Sección HERO */}
+      {/* HERO */}
       <section className="bg-success-subtle py-5 px-3 rounded-3 mb-5 text-center text-md-start">
         <div className="container">
           <div className="row align-items-center">
@@ -46,7 +47,7 @@ export const HomePage = ({ onAddToCart }) => {
                 Del campo a tu mesa
               </Heading>
               <Text className="fs-5 text-muted mb-4">
-                Frutas, verduras y productos orgánicos seleccionados en su punto justo de madurez, con despacho a las principales ciudades de Chile.
+                Frutas, verduras y productos orgánicos seleccionados en su punto justo de madurez.
               </Text>
               <div className="d-flex gap-2 justify-content-center justify-content-md-start">
                 <a href="#catalogo">
@@ -64,7 +65,12 @@ export const HomePage = ({ onAddToCart }) => {
         </div>
       </section>
 
-      {/* Sección CATÁLOGO */}
+      {/* TARJETAS INFO */}
+      <div className="container">
+        <InfoSection />
+      </div>
+
+      {/* CATÁLOGO */}
       <section id="catalogo" className="container my-5">
         <div className="text-center mb-4">
           <Heading level={2} className="fw-bold text-success">Catálogo</Heading>
@@ -72,7 +78,6 @@ export const HomePage = ({ onAddToCart }) => {
         </div>
 
         <div className="row g-4">
-          {/* Panel Lateral de Filtros */}
           <div className="col-lg-3">
             <FilterPanel
               texto={texto}
@@ -86,7 +91,6 @@ export const HomePage = ({ onAddToCart }) => {
             />
           </div>
 
-          {/* Grilla de Productos */}
           <div className="col-lg-9">
             <ProductGrid productos={productosFiltrados} onAddToCart={onAddToCart} />
           </div>

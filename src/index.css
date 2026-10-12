@@ -1,111 +1,76 @@
+/* src/index.css */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --verde: #3a7d44;
+  --verde-oscuro: #2c5f34;
+  --crema: #faf7f0;
+  --crema-2: #f1ecdf;
+  --blanco: #fff;
+  --texto: #26332a;
+  --muted: #71806f;
+  --borde: #e5e1d4;
+  --borde-fuerte: #d5d0c0;
+  --peligro: #c0392b;
+  --sombra: 0 10px 26px rgba(38, 51, 42, 0.1);
+  --radio: 16px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
+* { margin: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
-  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  line-height: 1.55;
+  overflow-x: clip;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+/* Animaciones y Transiciones */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.vista-animada { animation: aparecer 0.35s ease; }
+
+/* Categorías Gradient Backgrounds */
+.cat-frutas { background: linear-gradient(135deg, #ffeeda, #ffd9ad); }
+.cat-verduras { background: linear-gradient(135deg, #e9f7e4, #cdeccb); }
+.cat-organicos { background: linear-gradient(135deg, #fdf3d8, #f7e6b2); }
+.cat-lacteos { background: linear-gradient(135deg, #eaf3fc, #d4e5f7); }
+
+/* Tarjetas de Producto con Elevación Hover */
+.tarjeta-producto-custom {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.tarjeta-producto-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra);
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* Menú Emergente de Usuario */
+.menu-usuario-popup {
+  position: absolute;
+  top: 55px;
+  right: 15px;
+  z-index: 1060;
+  width: 230px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--sombra);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
+/* Marcadores del Mapa de Despacho */
+.mapa-contenedor { position: relative; max-width: 800px; margin: 0 auto; }
+.marcador { position: absolute; display: flex; align-items: center; gap: 5px; transform: translate(-50%, -50%); }
+.marcador.izq { flex-direction: row-reverse; }
+.marcador i { width: 13px; height: 13px; border-radius: 50%; background: var(--verde); border: 2.5px solid #fff; box-shadow: 0 0 0 3px rgba(58,125,68,.28); }
+.marcador b { font-size: 12px; background: rgba(255,255,255,.92); border: 1px solid var(--borde); border-radius: 8px; padding: 2px 7px; color: var(--texto); }
+.m-vina { top: 40.8%; left: 40.3%; }
+.m-valpo { top: 39%; left: 40%; }
+.m-santiago { top: 41%; left: 53%; }
+.m-puente { top: 43.2%; left: 55%; }
+.m-conce { top: 50.5%; left: 39%; }

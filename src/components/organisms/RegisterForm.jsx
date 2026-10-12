@@ -46,6 +46,7 @@ export const RegisterForm = ({ onSuccess }) => {
     }
   };
 
+  // En el handleSubmit de RegisterForm.jsx:
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -60,7 +61,6 @@ export const RegisterForm = ({ onSuccess }) => {
       direccion: validarTextoRequerido(formData.direccion, 'dirección', 5, 300)
     };
 
-    // Limpiar campos sin error
     Object.keys(newErrors).forEach(key => {
       if (!newErrors[key]) delete newErrors[key];
     });
@@ -70,8 +70,25 @@ export const RegisterForm = ({ onSuccess }) => {
       return;
     }
 
+    // Guardar en localStorage 'hh_usuarios'
+    const usuarios = JSON.parse(localStorage.getItem('hh_usuarios') || '[]');
+    const existe = usuarios.some(u => u.correo.toLowerCase() === formData.correo.toLowerCase());
+
+    if (existe) {
+      setErrors({ correo: 'Este correo ya se encuentra registrado.' });
+      return;
+    }
+
+    const nuevoUsuario = {
+      ...formData,
+      tipo: formData.correo.endsWith('@huertohogar.cl') ? 'Administrador' : 'Cliente'
+    };
+
+    usuarios.push(nuevoUsuario);
+    localStorage.setItem('hh_usuarios', JSON.stringify(usuarios));
+
     alert('¡Cuenta creada con éxito!');
-    if (onSuccess) onSuccess(formData);
+    if (onSuccess) onSuccess(nuevoUsuario);
   };
 
   return (

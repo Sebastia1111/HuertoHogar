@@ -1,4 +1,3 @@
-// src/components/organisms/LoginForm.jsx
 import { useState } from 'react';
 import { FormField } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
@@ -14,20 +13,24 @@ export const LoginForm = ({ onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Limpia el error del campo que se está editando
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
   };
 
-  const validate = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const newErrors = {};
 
     // Validar Correo
     if (!formData.correo.trim()) {
       newErrors.correo = 'El correo es obligatorio.';
-    } else if (!formData.correo.endsWith('@gmail.com') && !formData.correo.endsWith('@duocuc.cl')) {
-      newErrors.correo = 'El correo debe ser @gmail.com o @duocuc.cl';
+    } else if (
+      !formData.correo.endsWith('@gmail.com') &&
+      !formData.correo.endsWith('@duocuc.cl') &&
+      !formData.correo.endsWith('@huertohogar.cl')
+    ) {
+      newErrors.correo = 'El correo debe ser @gmail.com, @duocuc.cl o @huertohogar.cl';
     }
 
     // Validar Contraseña
@@ -37,16 +40,22 @@ export const LoginForm = ({ onSuccess }) => {
       newErrors.clave = 'La contraseña debe tener entre 4 y 10 caracteres.';
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    // Verificar si la cuenta existe en localStorage
+    if (Object.keys(newErrors).length === 0) {
+      const usuarios = JSON.parse(localStorage.getItem('hh_usuarios') || '[]');
+      const usuarioEncontrado = usuarios.find(
+        (u) => u.correo.toLowerCase() === formData.correo.trim().toLowerCase() && u.clave === formData.clave
+      );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      alert('¡Inicio de sesión exitoso!');
-      if (onSuccess) onSuccess(formData);
+      if (!usuarioEncontrado) {
+        newErrors.correo = 'Correo o contraseña incorrectos, o la cuenta no existe.';
+      } else {
+        if (onSuccess) onSuccess(usuarioEncontrado);
+        return;
+      }
     }
+
+    setErrors(newErrors);
   };
 
   return (

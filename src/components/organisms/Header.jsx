@@ -1,55 +1,79 @@
-// src/components/organisms/Header.jsx
-import { Button } from '../atoms/Button';
-import { Badge } from '../atoms/Badge';
+import { useState } from 'react';
 
-export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount = 0 }) => {
+export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount, sesion, onCerrarSesion }) => {
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const handleUserClick = () => {
+    if (sesion) {
+      setShowUserMenu(!showUserMenu);
+    } else {
+      window.location.hash = '#/ingreso';
+    }
+  };
+
   return (
-    <header className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top px-3 py-2">
-      <div className="container-fluid d-flex justify-content-between align-items-center">
-        
-        {/* Botón Menú Móvil usando el Átomo Button */}
-        <div className="d-lg-none me-2">
-          <Button variant="outline-success" onClick={onOpenMenu} aria-label="abrir menú">
-            ☰
-          </Button>
-        </div>
+    <header className="sticky-top bg-white border-bottom py-2 px-3 shadow-sm" style={{ zIndex: 1030 }}>
+      <div className="container-fluid d-flex align-items-center justify-content-between position-relative">
+        <button
+          className="btn btn-light rounded-3 p-2"
+          onClick={onOpenMenu}
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
 
-        {/* Logo de HuertoHogar */}
-        <a href="#/inicio" className="navbar-brand d-flex align-items-center text-success fw-bold fs-4">
-          <svg className="me-2" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M12 22V10"/>
-            <path d="M12 12C12 7 8 4 3 4c0 5 4 8 9 8z"/>
-            <path d="M12 10c0-4 3-6 9-6 0 4-3 6-9 6z"/>
-          </svg>
-          <span>Huerto<b>Hogar</b></span>
+        {/* Logo perfectamente centrado independientemente de los botones laterales */}
+        <a href="#/inicio" className="text-decoration-none d-flex align-items-center gap-2 position-absolute start-50 translate-middle-x">
+          <span className="fs-4">🌱</span>
+          <span className="fs-5 fw-bold text-dark">
+            Huerto<b className="text-success">Hogar</b>
+          </span>
         </a>
 
-        {/* Acciones utilizando Átomos Button y Badge */}
         <div className="d-flex align-items-center gap-2">
-          
-          {/* Átomo Button para Buscar */}
-          <Button variant="light" className="rounded-circle p-2" onClick={onOpenSearch} aria-label="búsqueda general">
+          <button className="btn btn-light rounded-3 p-2" onClick={onOpenSearch} title="Buscar">
             🔍
-          </Button>
+          </button>
 
-          {/* Átomo Button para Carrito + Átomo Badge para Contador */}
-          <div className="position-relative">
-            <Button variant="light" className="rounded-circle p-2" onClick={onOpenCart} aria-label="carrito de compras">
-              🛒
-            </Button>
+          <button className="btn btn-light rounded-3 p-2 position-relative" onClick={onOpenCart} title="Carrito">
+            🧺
             {cartCount > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle">
-                <Badge variant="danger">{cartCount}</Badge>
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+                {cartCount}
               </span>
             )}
-          </div>
+          </button>
 
-          {/* Átomo Button para Cuenta */}
-          <a href="#/ingreso">
-            <Button variant="outline-success" className="rounded-circle p-2" aria-label="cuenta">
-              👤
-            </Button>
-          </a>
+          <button className="btn btn-light rounded-3 p-2" onClick={handleUserClick} title="Cuenta">
+            👤
+          </button>
+
+          {showUserMenu && sesion && (
+            <div className="menu-usuario-popup">
+              <p className="fw-bold m-0 text-dark">Hola, {sesion.nombre}</p>
+              <small className="text-muted d-block mb-2">{sesion.tipo}</small>
+
+              {sesion.tipo === 'Administrador' && (
+                <a
+                  href="#/admin"
+                  className="btn btn-outline-success btn-sm w-100 mb-2 fw-bold"
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  📦 Gestionar stock
+                </a>
+              )}
+
+              <button
+                className="btn btn-outline-danger btn-sm w-100 fw-bold"
+                onClick={() => {
+                  setShowUserMenu(false);
+                  onCerrarSesion();
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
