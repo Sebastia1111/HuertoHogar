@@ -14,10 +14,10 @@ export const FormField = ({
     
 
 }) => {
-    return(
-        <div className='campo'>
+    return(//mb-3 da un espacio inferior estandar de bootstrap entre campos
+        <div className="mb-3 text-start">
             {/*Este label sirve para que la pagina lo pueda mostrar, y lo dibujara arriba */}
-            {label && <label htmlFor ={name}>{label}</label>}
+            {label && <label htmlFor ={name} className='form-label text-capitalize fw-bold'>{label}</label>}
 
             {/*Aqui se usa el atomo input */}
             <Input 

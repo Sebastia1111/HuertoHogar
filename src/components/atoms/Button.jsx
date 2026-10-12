@@ -1,6 +1,6 @@
 
 //Con sto indicamos que va a contener el molde y que variables recibira(props)
-export const Button = ({children, onClick, type = 'button', variant = 'primario'}) => {
+export const Button = ({children, onClick, type = 'button', variant = 'success', className = ''}) => {
     //children es el texto que ira escrito en el boton
     //onClick: Que funncion se ejecutara cuando el usuario haga clic
     //type: si es un boton normal('button'). o uno por ejemplo para el formulario ('submit')
@@ -9,7 +9,7 @@ export const Button = ({children, onClick, type = 'button', variant = 'primario'
     return (
         <button
             type = {type}
-            className={`btn btn-${variant}`}
+            className={`btn btn-${variant} ${className}`.trim()}
             onClick = {onClick}
         >
             {children}
