@@ -30,6 +30,32 @@ export function App() {
   const [sesion, setSesion] = useState(() => leerStorage('hh_sesion', null));
   const [cartItems, setCartItems] = useState(() => leerStorage('hh_carrito', []));
 
+
+  //Cuenta administrador 
+  // src/App.jsx
+  useEffect(() => {
+    const usuariosGuardados = leerStorage('hh_usuarios', []);
+    const existeAdmin = usuariosGuardados.some(u => u.correo === 'admin@huertohogar.cl');
+
+    if (!existeAdmin) {
+      const adminDefault = {
+        run: '11111111K',
+        nombre: 'Administrador',
+        apellidos: 'HuertoHogar',
+        correo: 'admin@huertohogar.cl',
+        clave: '12345',
+        tipo: 'Administrador',
+        region: 'Región Metropolitana',
+        comuna: 'Santiago',
+        direccion: 'Av. Principal 123'
+      };
+      guardarStorage('hh_usuarios', [...usuariosGuardados, adminDefault]);
+    }
+  }, []);
+
+
+
+
   // Estado global de stock dinámico
   const [stocks, setStocks] = useState(() => {
     const guardado = leerStorage('hh_stocks', null);
@@ -228,6 +254,11 @@ export function App() {
       <Toast mensaje={toastMsg} />
     </div>
   );
+
+
+  
+
+
 }
 
 export default App;

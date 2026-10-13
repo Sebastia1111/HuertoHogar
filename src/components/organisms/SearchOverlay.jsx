@@ -51,7 +51,9 @@ export const SearchOverlay = ({ isOpen, onClose }) => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Busca productos, blogs o secciones..."
-                  className="border-0 shadow-none fs-5"
+                  className="w-100 border-0 shadow-none fs-5 py-1 px-2"
+                  autoFocus
+                  autoComplete="off"
                 />
               </div>
               <Button variant="light" className="btn-close" onClick={onClose} aria-label="Cerrar"></Button>
