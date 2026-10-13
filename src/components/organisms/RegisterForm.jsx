@@ -1,9 +1,10 @@
-// src/components/organisms/RegisterForm.jsx
+// En src/components/organisms/RegisterForm.jsx
 import { useState } from 'react';
 import { FormField } from '../molecules/FormField';
 import { SelectField } from '../molecules/SelectField';
 import { Button } from '../atoms/Button';
 import { regionesYComunas } from '../../data/regiones';
+import { leerStorage, guardarStorage } from '../../utils/storage'; // 👈 Importamos los helpers de storage
 import {
   validarRun,
   validarTextoRequerido,
@@ -27,14 +28,12 @@ export const RegisterForm = ({ onSuccess }) => {
 
   const [errors, setErrors] = useState({});
 
-  // Filtrar comunas según la región seleccionada
   const regionSeleccionada = regionesYComunas.find(r => r.region === formData.region);
   const opcionesComunas = regionSeleccionada ? regionSeleccionada.comunas : [];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Si cambia la región, reiniciamos la comuna
     if (name === 'region') {
       setFormData(prev => ({ ...prev, region: value, comuna: '' }));
     } else {
@@ -46,15 +45,23 @@ export const RegisterForm = ({ onSuccess }) => {
     }
   };
 
-  // En el handleSubmit de RegisterForm.jsx:
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const obtenerErrorCorreo = (correo) => {
+      const err = validarCorreo(correo);
+      if (err) return err;
+      if (correo.trim().toLowerCase().endsWith('@huertohogar.cl')) {
+        return 'Los correos @huertohogar.cl son de uso exclusivo administrativo y no se pueden registrar de forma pública.';
+      }
+      return '';
+    };
+    
     const newErrors = {
       run: validarRun(formData.run),
       nombre: validarTextoRequerido(formData.nombre, 'nombre', 2, 50),
       apellidos: validarTextoRequerido(formData.apellidos, 'apellidos', 2, 100),
-      correo: validarCorreo(formData.correo),
+      correo: obtenerErrorCorreo(formData.correo),
       clave: validarClave(formData.clave),
       region: validarSeleccion(formData.region, 'región'),
       comuna: validarSeleccion(formData.comuna, 'comuna'),
@@ -70,9 +77,13 @@ export const RegisterForm = ({ onSuccess }) => {
       return;
     }
 
-    // Guardar en localStorage 'hh_usuarios'
-    const usuarios = JSON.parse(localStorage.getItem('hh_usuarios') || '[]');
-    const existe = usuarios.some(u => u.correo.toLowerCase() === formData.correo.toLowerCase());
+    // 🟢 Lectura directa y sin advertencias del linter:
+    const usuarios = leerStorage('hh_usuarios', []);
+    const correoLimpio = formData.correo.trim().toLowerCase();
+
+    const existe = usuarios.some(
+      (u) => u && u.correo && u.correo.trim().toLowerCase() === correoLimpio
+    );
 
     if (existe) {
       setErrors({ correo: 'Este correo ya se encuentra registrado.' });
@@ -81,11 +92,17 @@ export const RegisterForm = ({ onSuccess }) => {
 
     const nuevoUsuario = {
       ...formData,
-      tipo: formData.correo.endsWith('@huertohogar.cl') ? 'Administrador' : 'Cliente'
+      run: formData.run.trim(),
+      nombre: formData.nombre.trim(),
+      apellidos: formData.apellidos.trim(),
+      correo: correoLimpio,
+      clave: formData.clave.trim(),
+      direccion: formData.direccion.trim(),
+      tipo: correoLimpio.endsWith('@huertohogar.cl') ? 'Administrador' : 'Cliente'
     };
 
     usuarios.push(nuevoUsuario);
-    localStorage.setItem('hh_usuarios', JSON.stringify(usuarios));
+    guardarStorage('hh_usuarios', usuarios);
 
     alert('¡Cuenta creada con éxito!');
     if (onSuccess) onSuccess(nuevoUsuario);
@@ -164,6 +181,7 @@ export const RegisterForm = ({ onSuccess }) => {
             value={formData.region}
             onChange={handleChange}
             options={regionesYComunas.map(r => r.region)}
+            placeholder="Selecciona una region"
             error={errors.region}
           />
         </div>

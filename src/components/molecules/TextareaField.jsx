@@ -29,7 +29,7 @@ export const TextareaField = ({
       <div className="d-flex justify-content-between mt-1">
         <div>{error && <small className="text-danger fw-semibold">{error}</small>}</div>
         <small className="text-muted">
-          {value.length} / {maxLength}
+          {(value || '').lenght} / {maxLength}
         </small>
       </div>
     </div>

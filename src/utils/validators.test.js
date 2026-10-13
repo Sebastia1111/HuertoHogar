@@ -27,7 +27,7 @@ describe('Pruebas unitarias de validators.js', () => {
     });
 
     it('debe rechazar dominios no autorizados', () => {
-      expect(validarCorreo('usuario@hotmail.com')).toBe('Solo aceptamos correos @gmail.com o @duocuc.cl');
+      expect(validarCorreo('usuario@hotmail.com')).toBe('Solo aceptamos correos @gmail.com, @duocuc.cl o @huertohogar.cl');
     });
   });
 

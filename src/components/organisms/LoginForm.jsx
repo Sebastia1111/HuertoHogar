@@ -1,6 +1,9 @@
+// En src/components/organisms/LoginForm.jsx
 import { useState } from 'react';
 import { FormField } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
+import { validarCorreo, validarClave } from '../../utils/validators';
+import { leerStorage } from '../../utils/storage'; // 👈 Importamos leerStorage
 
 export const LoginForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -20,31 +23,28 @@ export const LoginForm = ({ onSuccess }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const errorCorreo = validarCorreo(formData.correo);
+    const errorClave = validarClave(formData.clave);
+
     const newErrors = {};
+    if (errorCorreo) newErrors.correo = errorCorreo;
+    if (errorClave) newErrors.clave = errorClave;
 
-    // Validar Correo
-    if (!formData.correo.trim()) {
-      newErrors.correo = 'El correo es obligatorio.';
-    } else if (
-      !formData.correo.endsWith('@gmail.com') &&
-      !formData.correo.endsWith('@duocuc.cl') &&
-      !formData.correo.endsWith('@huertohogar.cl')
-    ) {
-      newErrors.correo = 'El correo debe ser @gmail.com, @duocuc.cl o @huertohogar.cl';
-    }
-
-    // Validar Contraseña
-    if (!formData.clave) {
-      newErrors.clave = 'La contraseña es obligatoria.';
-    } else if (formData.clave.length < 4 || formData.clave.length > 10) {
-      newErrors.clave = 'La contraseña debe tener entre 4 y 10 caracteres.';
-    }
-
-    // Verificar si la cuenta existe en localStorage
     if (Object.keys(newErrors).length === 0) {
-      const usuarios = JSON.parse(localStorage.getItem('hh_usuarios') || '[]');
+      // 🟢 Lectura limpia y segura sin errores de linter:
+      const usuarios = leerStorage('hh_usuarios', []);
+
+      const correoIngresado = formData.correo.trim().toLowerCase();
+      const claveIngresada = formData.clave.trim();
+
       const usuarioEncontrado = usuarios.find(
-        (u) => u.correo.toLowerCase() === formData.correo.trim().toLowerCase() && u.clave === formData.clave
+        (u) =>
+          u &&
+          u.correo &&
+          u.correo.trim().toLowerCase() === correoIngresado &&
+          u.clave &&
+          u.clave.trim() === claveIngresada
       );
 
       if (!usuarioEncontrado) {

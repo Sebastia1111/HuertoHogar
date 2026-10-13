@@ -28,7 +28,7 @@ export const CartDrawer = ({
     if (!sesion) {
       onClose();
       onMostrarAviso('Inicia sesión para finalizar tu compra');
-      window.location.assing('#/ingreso');
+      window.location.assign('#/ingreso');
       return;
     }
 

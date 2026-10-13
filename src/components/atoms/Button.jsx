@@ -5,10 +5,10 @@
     //type: si es un boton normal('button'). o uno por ejemplo para el formulario ('submit')
     //variant: para controlar el color que tiene
 // src/components/atoms/Button.jsx
-export const Button = ({ children, variant = 'primary', className = '', onClick, disabled, ...props }) => {
+export const Button = ({ children, variant = 'primary', className = '', onClick, disabled, type = 'button',...props }) => {
   return (
     <button
-      type="button"
+      type={type}
       className={`btn btn-${variant} ${className}`}
       onClick={onClick}
       disabled={disabled}

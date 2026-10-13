@@ -8,15 +8,23 @@ export const validarCorreo = (correo, esOpcional = false) => {
   if (!correo || !correo.trim()) return 'El correo es obligatorio.';
   const mail = correo.toLowerCase().trim();
   if (!DOMINIOS_PERMITIDOS.some((d) => mail.endsWith(d))) {
-    return 'Solo aceptamos correos @gmail.com o @duocuc.cl';
+    return 'Solo aceptamos correos @gmail.com, @duocuc.cl o @huertohogar.cl';
   }
   return '';
 };
 
 // Validar Contraseña (4 a 10 caracteres)
 export const validarClave = (clave) => {
-  if (!clave || !clave.trim()) return 'La contraseña es obligatoria.';
-  if (clave.length < 4 || clave.length > 10) {
+  if (!clave || !clave.trim()) {
+    return 'La contraseña es obligatoria.';
+  }
+
+  if (clave.includes(' ')){
+    return 'La contraseña no debe poseer espacios en blanco'
+
+  }
+  const claveLimpia = clave.trim();
+  if (claveLimpia.length < 4 || claveLimpia.length > 10) {
     return 'La contraseña debe tener entre 4 y 10 caracteres.';
   }
   return '';

@@ -49,9 +49,21 @@ export const HomePage = ({ onAddToCart, sesion, stocks }) => {
                 Frutas, verduras y productos orgánicos seleccionados en su punto justo de madurez.
               </Text>
               <div className="d-flex gap-2 justify-content-center justify-content-md-start">
-                <a href="#catalogo">
-                  <Button variant="success" className="fw-bold px-4 py-2">Ver catálogo</Button>
-                </a>
+                  <Button 
+                    variant="success" 
+                    className="fw-bold px-4 py-2"
+                    onClick ={()=> {
+                      document.getElementById('catalogo')?.scrollIntoView({behavior: 'smooth'})
+
+                    }}
+                  
+                  
+                  >
+                    Ver catálogo
+                  </Button>
+
+
+
                 <a href="#/nosotros">
                   <Button variant="outline-success" className="fw-bold px-4 py-2">Conócenos</Button>
                 </a>
