@@ -5,7 +5,8 @@ export const Input = ({
     onChange,
     placeholder,
     required = false,
-    className = ''
+    className = '',
+    ...props
 
 }) => {
 //se crea el molde
@@ -25,6 +26,7 @@ export const Input = ({
             placeholder = {placeholder}
             required = {required}
             className = {`input-control ${className}`.trim()}
+            {...props}
         />
     )
 }

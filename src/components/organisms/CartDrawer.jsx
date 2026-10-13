@@ -19,6 +19,29 @@ export const CartDrawer = ({
     return suma + pReal * item.cantidad;
   }, 0);
 
+  const handleVerCatalogo =(e) => {
+    e.preventDefault();
+    onClose();
+  
+    const irAlCatalogo =()=>{
+      const elemento = document.getElementById('catalogo')
+      if(elemento){
+        elemento.scrollIntoView({ behavior: 'smooth'});
+      }
+    };
+
+    if (window.location.hash !== '#/inicio' && window.location.hash !== ''){
+      window.location.hash = '#/inicio';
+      setTimeout(irAlCatalogo, 150)
+
+    } else {
+      irAlCatalogo();
+    }
+  
+  };
+
+
+
   const handleFinalizarCompra = () => {
     if (cartItems.length === 0) {
       onMostrarAviso('Tu carrito está vacío');
@@ -79,7 +102,7 @@ export const CartDrawer = ({
               <p className="mb-3">Tu carrito está vacío</p>
               <a
                 href="#/inicio"
-                onClick={onClose}
+                onClick={handleVerCatalogo}
                 className="btn btn-outline-success btn-sm rounded-3 fw-bold"
               >
                 Ver catálogo

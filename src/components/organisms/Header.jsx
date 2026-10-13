@@ -11,6 +11,20 @@ export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount, sesion
     }
   };
 
+  const handlerLogoCLick = (e) =>{
+    if(window.location.hash == '#/inicio' || window.location.hash == ''){
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth'});
+
+    } else {
+      window.location.hash = "#/inicio";
+      window.scrollTo({ top: 0, behavior: 'smooth'});
+    }
+
+  }
+
+
+
   return (
     <header className="sticky-top bg-white border-bottom py-2 px-3 shadow-sm" style={{ zIndex: 1030 }}>
       <div className="container-fluid d-flex align-items-center justify-content-between position-relative">
@@ -22,8 +36,11 @@ export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount, sesion
           ☰
         </button>
 
+
+
+
         {/* Logo perfectamente centrado independientemente de los botones laterales */}
-        <a href="#/inicio" className="text-decoration-none d-flex align-items-center gap-2 position-absolute start-50 translate-middle-x">
+        <a href="#/inicio" onClick={handlerLogoCLick} className="text-decoration-none d-flex align-items-center gap-2 position-absolute start-50 translate-middle-x">
           <span className="fs-4">🌱</span>
           <span className="fs-5 fw-bold text-dark">
             Huerto<b className="text-success">Hogar</b>
