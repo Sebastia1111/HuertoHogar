@@ -16,7 +16,7 @@
 
 **HuertoHogar** es una tienda online dedicada a la venta de productos frescos: frutas de temporada, verduras orgánicas, productos orgánicos y lácteos de granjas locales. Hoy despacha a las principales ciudades de Chile.
 
-El proyecto está desarrollado **100% con HTML, CSS y JavaScript vanilla**, sin frameworks ni dependencias externas.
+El proyecto está desarrollado **100% con HTML, CSS y JavaScript vanilla**, utilizando herramientas como Vite, React y JSX.
 
 ---
 
@@ -54,6 +54,15 @@ HuertoHogar/
 ├── index.html
 └── README.md
 ```
+
+---
+
+| Herramienta | Rol Principal |
+| ----------- | ------------- |
+| Vite        | Entorno de desarrollo y empaquetador (bundler). |
+| React	     | Biblioteca de JavaScript. |
+| JSX | Extensión de sintaxis (JavaScript XML). |
+
 
 ---
 
