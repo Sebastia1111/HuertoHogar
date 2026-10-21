@@ -14,6 +14,9 @@
 
 ## Descripción del Proyecto
 
+[**Click Aquí para Obtener la Configuración!**](https://start.spring.io/#!type=maven-project&language=java&platformVersion=4.1.1&packaging=jar&configurationFileFormat=yaml&jvmVersion=21&groupId=com.fullstack&artifactId=&packageName=com.fullstack.&dependencies=web,cloud-eureka,data-jpa,validation,flyway,mysql,mariadb,lombok,cloud-feign,security)
+
+
 **HuertoHogar** es una tienda online dedicada a la venta de productos frescos: frutas de temporada, verduras orgánicas, productos orgánicos y lácteos de granjas locales. Hoy despacha a las principales ciudades de Chile.
 
 El proyecto está desarrollado **100% con HTML, CSS y JavaScript vanilla**, utilizando herramientas como Vite, React y JSX.
