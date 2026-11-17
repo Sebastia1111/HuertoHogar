@@ -1,0 +1,186 @@
+/* src/index.css */
+:root {
+  --verde: #3a7d44;
+  --verde-oscuro: #2c5f34;
+  --crema: #faf7f0;
+  --crema-2: #f1ecdf;
+  --blanco: #fff;
+  --texto: #26332a;
+  --muted: #71806f;
+  --borde: #e5e1d4;
+  --borde-fuerte: #d5d0c0;
+  --peligro: #c0392b;
+  --sombra: 0 10px 26px rgba(38, 51, 42, 0.1);
+  --radio: 16px;
+}
+
+* { margin: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  line-height: 1.55;
+  overflow-x: clip;
+}
+
+/* Animaciones y Transiciones */
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.vista-animada { animation: aparecer 0.35s ease; }
+
+/* Categorías Gradient Backgrounds */
+.cat-frutas { background: linear-gradient(135deg, #ffeeda, #ffd9ad); }
+.cat-verduras { background: linear-gradient(135deg, #e9f7e4, #cdeccb); }
+.cat-organicos { background: linear-gradient(135deg, #fdf3d8, #f7e6b2); }
+.cat-lacteos { background: linear-gradient(135deg, #eaf3fc, #d4e5f7); }
+
+/* Tarjetas de Producto con Elevación Hover */
+.tarjeta-producto-custom {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.tarjeta-producto-custom:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra);
+}
+
+/* Menú Emergente de Usuario */
+.menu-usuario-popup {
+  position: absolute;
+  top: 55px;
+  right: 15px;
+  z-index: 1060;
+  width: 230px;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--sombra);
+}
+
+/* Marcadores del Mapa de Despacho */
+.mapa-contenedor { position: relative; max-width: 800px; margin: 0 auto; }
+.marcador { position: absolute; display: flex; align-items: center; gap: 5px; transform: translate(-50%, -50%); }
+.marcador.izq { flex-direction: row-reverse; }
+.marcador i { width: 13px; height: 13px; border-radius: 50%; background: var(--verde); border: 2.5px solid #fff; box-shadow: 0 0 0 3px rgba(58,125,68,.28); }
+.marcador b { font-size: 12px; background: rgba(255,255,255,.92); border: 1px solid var(--borde); border-radius: 8px; padding: 2px 7px; color: var(--texto); }
+.m-vina { top: 40.8%; left: 40.3%; }
+.m-valpo { top: 39%; left: 40%; }
+.m-santiago { top: 41%; left: 53%; }
+.m-puente { top: 43.2%; left: 55%; }
+.m-conce { top: 50.5%; left: 39%; }
+
+/* Efecto Hover para las Tarjetas de Producto */
+.tarjeta-producto:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Colores de Fondo por Categoría */
+.cat-frutas { background-color: #ffe8d6; }
+.cat-verduras { background-color: #e2f0d9; }
+.cat-organicos { background-color: #fff3cd; }
+.cat-lacteos { background-color: #e0f2fe; }
+
+/* Contenedor principal centrado del mapa */
+/* Contenedor alineado exacto al ancho de la imagen */
+.mapa-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 15px 0;
+}
+
+.mapa-seccion {
+  position: relative;
+  display: inline-block; /* Obliga al contenedor a medir exactamente lo mismo que la imagen */
+  margin: 0 auto;
+}
+
+.mapa-img {
+  display: block;
+  height: 460px; /* Altura fija para fijar porcentajes precisos */
+  width: auto;
+  border-radius: 8px;
+}
+
+/* Estilo base de los marcadores / pines */
+.marcador {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e0e0e0;
+  font-size: 11.5px;
+  color: #1b5e20;
+  white-space: nowrap;
+  z-index: 2;
+  transform: translateY(-50%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marcador:hover {
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.marcador i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #2e7d32;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.3);
+  flex-shrink: 0;
+}
+
+/* --- Posicionamiento exacto sobre la franja de Chile --- */
+
+/* LADO IZQUIERDO (Dot en el borde derecho, pegado al centro del mapa) */
+.pos-vina {
+  top: 33%;
+  right: calc(50% + 2px);
+}
+
+.pos-valpo {
+  top: 42%;
+  right: calc(50% + 2px);
+}
+
+.pos-conce {
+  top: 57%;
+  right: calc(50% + 2px);
+}
+
+/* LADO DERECHO (Dot en el borde izquierdo, pegado al centro del mapa) */
+.pos-santiago {
+  top: 37%;
+  left: calc(50% + 2px);
+}
+
+.pos-puente {
+  top: 47%;
+  left: calc(50% + 2px);
+}
+
+/* Adaptabilidad para móviles */
+@media (max-width: 576px) {
+  .mapa-img {
+    height: 380px;
+  }
+  .marcador {
+    font-size: 10px;
+    padding: 3px 7px;
+  }
+}
