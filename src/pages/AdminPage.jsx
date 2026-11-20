@@ -1,58 +1,88 @@
 // src/pages/AdminPage.jsx
-import { PRODUCTOS } from '../data/productos';
-import { Button } from '../components/atoms/Button';
+// Panel de gestión con restricciones por rol:
+//  - Stock y Pedidos: ADMIN y VENDEDOR
+//  - Usuarios: solo ADMIN
+// El backend valida los mismos permisos y responde 403 si alguien se los salta.
+import { useState } from 'react';
 import { Heading, Text } from '../components/atoms/Typography';
+import { AccesoRestringido } from '../components/molecules/AccesoRestringido';
+import { PanelPedidos } from '../components/organisms/PanelPedidos';
+import { PanelStock } from '../components/organisms/PanelStock';
+import { PanelUsuarios } from '../components/organisms/PanelUsuarios';
+import { puedeGestionar, puedeGestionarUsuarios } from '../utils/permisos';
 
-export const AdminPage = ({ sesion, stocks, onUpdateStock }) => {
-  if (!sesion || sesion.tipo !== 'Administrador') {
+export const AdminPage = ({
+  sesion,
+  verificandoSesion = false,
+  productos,
+  stocks,
+  onUpdateStock,
+  modoApi = false,
+  cargando = false,
+  errorApi = '',
+  onReintentar,
+  onMostrarAviso
+}) => {
+  const [pestana, setPestana] = useState('stock');
+
+  if (verificandoSesion) return <AccesoRestringido tipo="verificando" />;
+
+  if (!sesion) {
     return (
-      <div className="container my-5 text-center py-5 bg-white border rounded">
-        <span className="display-4">🔒</span>
-        <Heading level={3} className="mt-3 text-muted">Acceso Restringido</Heading>
-        <Text className="text-muted">Sección exclusiva para administradores de HuertoHogar.</Text>
-        <a href="#/ingreso"><Button variant="success" className="mt-3">Iniciar Sesión</Button></a>
-      </div>
+      <AccesoRestringido mensaje="Inicia sesión con una cuenta administradora o de vendedor para gestionar la tienda." />
     );
   }
 
-  const handleStockChange = (codigo, valor) => {
-    const num = Math.max(0, Number(valor));
-    onUpdateStock(codigo, num);
-  };
+  if (!puedeGestionar(sesion)) {
+    return (
+      <AccesoRestringido
+        tipo="permisos"
+        mensaje="Esta sección es exclusiva para administradores y vendedores de HuertoHogar."
+      />
+    );
+  }
+
+  const pestanas = [
+    { id: 'stock', texto: '📦 Stock' },
+    { id: 'pedidos', texto: '🧾 Pedidos' },
+    ...(puedeGestionarUsuarios(sesion) ? [{ id: 'usuarios', texto: '👥 Usuarios' }] : [])
+  ];
+  const activa = pestanas.some((p) => p.id === pestana) ? pestana : 'stock';
 
   return (
     <div className="container my-5">
-      <Heading level={1} className="fw-bold text-success mb-1">Gestión de Stock</Heading>
-      <Text className="text-muted mb-4">Administra el inventario disponible en tiempo real.</Text>
+      <Heading level={1} className="fw-bold text-success mb-1">Panel de gestión</Heading>
+      <Text className="text-muted mb-3">Sesión: {sesion.nombre || sesion.correo} · {sesion.tipo}</Text>
 
-      <div className="bg-white border rounded shadow-sm p-4">
-        {PRODUCTOS.map((prod) => {
-          const valorActual = stocks[prod.codigo] !== undefined ? stocks[prod.codigo] : prod.stock;
+      <ul className="nav nav-tabs mb-4">
+        {pestanas.map((p) => (
+          <li className="nav-item" key={p.id}>
+            <button
+              type="button"
+              className={`nav-link ${activa === p.id ? 'active fw-bold' : 'text-success'}`}
+              onClick={() => setPestana(p.id)}
+            >
+              {p.texto}
+            </button>
+          </li>
+        ))}
+      </ul>
 
-          return (
-            <div key={prod.codigo} className="d-flex justify-content-between align-items-center py-3 border-bottom">
-              <div className="d-flex align-items-center gap-3">
-                <span className="fs-3">{prod.emoji}</span>
-                <div>
-                  <Heading level={6} className="mb-0 fw-bold">{prod.nombre}</Heading>
-                  <Text className="text-muted extra-small mb-0">Código: {prod.codigo}</Text>
-                </div>
-              </div>
-              <div className="d-flex align-items-center gap-2">
-                <input
-                  type="number"
-                  min="0"
-                  className="form-control text-center"
-                  style={{ width: '90px' }}
-                  value={valorActual}
-                  onChange={(e) => handleStockChange(prod.codigo, e.target.value)}
-                />
-                <span className="text-muted small">unidades</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {activa === 'stock' && (
+        <PanelStock
+          productos={productos}
+          stocks={stocks}
+          onUpdateStock={onUpdateStock}
+          modoApi={modoApi}
+          cargando={cargando}
+          errorApi={errorApi}
+          onReintentar={onReintentar}
+        />
+      )}
+      {activa === 'pedidos' && (
+        <PanelPedidos sesion={sesion} onMostrarAviso={onMostrarAviso} onStockCambiado={onReintentar} />
+      )}
+      {activa === 'usuarios' && <PanelUsuarios sesion={sesion} onMostrarAviso={onMostrarAviso} />}
     </div>
   );
 };

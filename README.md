@@ -1,125 +1,155 @@
 <div align="center">
 
 # HuertoHogar
-### Tienda Web de Productos Orgánicos y Del Campo
 
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/HTML)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/es/docs/Web/CSS)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
-<!-- [![LocalStorage](https://img.shields.io/badge/Storage-LocalStorage-FF6D00?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/API/Window/localStorage) -->
+### Tienda web de productos orgánicos y del campo
+
+**DSY1104 — Desarrollo Fullstack II — Evaluación Parcial 3**
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io)
+[![MySQL](https://img.shields.io/badge/MySQL-8.4-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
 
 </div>
 
 ---
 
-## Descripción del Proyecto
+## Descripción
 
-[**Click Aquí para Obtener la Configuración!**](https://start.spring.io/#!type=maven-project&language=java&platformVersion=4.1.1&packaging=jar&configurationFileFormat=yaml&jvmVersion=21&groupId=com.fullstack&artifactId=&packageName=com.fullstack.&dependencies=web,cloud-eureka,data-jpa,validation,flyway,mysql,mariadb,lombok,cloud-feign,security)
+**HuertoHogar** es una tienda online de frutas, verduras, productos orgánicos y
+lácteos de granjas locales. Este repositorio es el **frontend (React + Vite)**. Se
+integra con el backend **HuertoHogar-backend** (microservicios Spring Boot + Eureka
++ MySQL en Laragon), que está en su propio repositorio.
 
+La entrega incorpora:
 
-**HuertoHogar** es una tienda online dedicada a la venta de productos frescos: frutas de temporada, verduras orgánicas, productos orgánicos y lácteos de granjas locales. Hoy despacha a las principales ciudades de Chile.
-
-El proyecto está desarrollado **100% con HTML, CSS y JavaScript vanilla**, utilizando herramientas como Vite, React y JSX.
-
----
-
-## Funcionalidades
-
-| Vista | Descripción |
-| ----- | ----------- |
-| **Home** | Hero de bienvenida, tarjetas de información con scroll horizontal, sección de "lo más vendido", catálogo con búsqueda especial y filtros en tiempo real |
-| **Productos** | Listado generado desde un arreglo de JavaScript, con carrito funcional en la vista |
-| **Detalle del producto** | Descripción completa, control de cantidad según stock y añadir al carrito |
-| **Carrito** | Persistencia en `localStorage`, validación contra stock, totales y generación de pedidos simulados |
-| **Ingreso / Registro** | Validaciones en tiempo real: correos Duoc/Gmail, RUN chileno con dígito verificador, regiones y comunas dinámicas |
-| **Nosotros** | Historia, misión, visión, categorías del negocio y equipo de desarrollo |
-| **Blogs + Detalle** | 2 artículos con sus respectivas vistas de detalle |
-| **Contacto** | Formulario validado con contador de caracteres en vivo |
-
-Además:
-
-- **Búsqueda general** (lupa en la cabecera) sobre productos, blogs y secciones
-- **Menú lateral deslizante** con navegación completa
-- **Diseño responsivo** para móvil, tablet y escritorio
+- Catálogo desde la API con búsqueda, filtros y validación de stock.
+- Autenticación con **JWT** y roles `ADMIN`, `VENDEDOR` y `CLIENTE`.
+- Sesión persistente (sobrevive recargas) con renovación automática de tokens.
+- Checkout real: crea la boleta y descuenta stock en MySQL, con fecha de entrega preferida.
+- **Mis pedidos**: boletas, seguimiento de estado y cancelación.
+- **Mi perfil**: dirección de entrega, teléfono y cambio de contraseña.
+- **Panel de gestión** restringido por rol: stock y pedidos (ADMIN/VENDEDOR), usuarios (solo ADMIN).
+- Catálogo local de respaldo si el backend está apagado.
 
 ---
 
-## 📁 Estructura del Proyecto
+## Arquitectura
 
 ```
-HuertoHogar/
-├── css/
-│   └── style.css
-├── js/
-│   └── script.js
-├── assets/
-│   └── img/
-├── index.html
-└── README.md
+React + Vite (5173)
+   │  proxy de Vite
+   ├─ /api/auth, /api/usuarios ─────► usuarios :8082 ──► MySQL huertohogar_usuarios
+   └─ /api/tienda, /api/inventario ─► tienda   :8083 ──► MySQL huertohogar_tienda
+                                         │ (checkout) consulta a usuarios vía Eureka (o directo si Eureka no está)
+usuarios y tienda se registran en eureka-server :8761
+```
+
+| Módulo | Puerto | Responsabilidad |
+| --- | --- | --- |
+| Frontend React | 5173 | Interfaz (este repositorio) |
+| `eureka-server` | 8761 | Registro de servicios |
+| `usuarios` | 8082 | Login, registro, JWT, refresh, perfil y gestión de usuarios |
+| `tienda` | 8083 | Inventario, catálogo, checkout y pedidos (el carrito vive en el navegador) |
+
+El frontend llama siempre a rutas relativas (`/api/...`) y **Vite las enruta** al
+microservicio correcto (ver `vite.config.js`), así no hay URLs fijas en el código.
+
+---
+
+## Puesta en marcha
+
+### 1. Backend
+
+1. Abrir **Laragon** → *Iniciar todo* (MySQL en el puerto 3306). Las bases, tablas,
+   los 9 productos y las cuentas de prueba se crean solas al arrancar.
+2. En la carpeta del backend:
+   doble clic en **`iniciar.bat`**. Abre una ventana para Eureka (8761), usuarios (8082)
+   y tienda (8083). El orden no importa y Eureka es opcional.
+
+### 2. Frontend
+
+```powershell
+npm install
+npm run dev
+```
+
+Abrir <http://localhost:5173>. Si el backend está apagado, el catálogo funciona en
+modo local con los datos de `src/data/productos.js`.
+
+---
+
+## Cuentas de prueba (clave `12345`)
+
+| Rol | Correo | Qué puede hacer |
+| --- | --- | --- |
+| Administrador | `admin@huertohogar.cl` | Todo: stock, pedidos y usuarios |
+| Vendedor | `vendedor@huertohogar.cl` | Stock y estados de pedidos |
+| Cliente | `cliente@huertohogar.cl` | Comprar, mis pedidos y mi perfil |
+
+Para probar el **20 % de descuento Duoc**, registra una cuenta con correo `@duocuc.cl`.
+
+---
+
+## Funcionalidades principales
+
+| Vista | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| **Inicio** | `#/inicio` | Público | Hero, destacados, catálogo, búsqueda y filtros |
+| **Detalle** | `#/producto/FR001` | Público | Descripción, origen, stock y selector de cantidad |
+| **Carrito** | panel lateral | Público / compra con sesión | Totales con descuento, fecha de entrega y checkout |
+| **Ingreso / Registro** | `#/ingreso`, `#/registro` | Público | JWT; RUN módulo 11, correo y región/comuna |
+| **Mis pedidos** | `#/pedidos` | Con sesión | Boletas (neto, IVA, descuento), seguimiento y cancelación |
+| **Mi perfil** | `#/perfil` | Con sesión | Datos personales, dirección de entrega, teléfono y contraseña |
+| **Panel de gestión** | `#/admin` | ADMIN / VENDEDOR | Pestañas Stock y Pedidos; Usuarios solo ADMIN |
+| **Nosotros / Blogs / Contacto** | | Público | Contenido informativo y formulario validado |
+
+### Seguridad y sesión
+
+- Access token de 15 minutos y refresh token de 7 días (ambos JWT, sin tabla en la BD), guardados en `localStorage` (clave `hh_auth`).
+- `session.js` renueva el token antes de que expire; varias peticiones comparten un mismo refresh.
+- Al recargar, `useAuth` muestra la sesión guardada y la revalida con `/api/auth/me`.
+- Al cerrar sesión, el backend sube `tokenVersion` del usuario: todos los tokens anteriores dejan de servir.
+- Restricciones por rol en la interfaz (`src/utils/permisos.js`): un cliente que entra a `#/admin`
+  ve "No tienes permisos", y los enlaces de gestión solo aparecen para ADMIN/VENDEDOR. El backend
+  aplica las mismas reglas y responde `403` si alguien intenta saltárselas.
+
+---
+
+## Pruebas
+
+```powershell
+npm test -- --run
+npm run lint
+npm run build
+```
+
+54 pruebas (servicios de API, sesión, permisos por rol, páginas de admin y pedidos,
+validadores y componentes), lint sin errores y build de producción en `dist/`.
+
+---
+
+## Estructura del frontend
+
+```
+src/
+├── components/
+│   ├── atoms/          Button, Toast, Typography...
+│   ├── molecules/      FormField, SelectField, ProductCard, AccesoRestringido...
+│   └── organisms/      Header, CartDrawer, BoletaPedido, PanelStock, PanelPedidos, PanelUsuarios...
+├── data/               productos.js (respaldo), regiones.js, blogs...
+├── hooks/              useAuth.js, useInventario.js
+├── pages/              HomePage, AdminPage, PedidosPage, PerfilPage, LoginPage...
+├── services/           authApi.js, session.js, tiendaApi.js, inventarioApi.js, usuariosApi.js
+├── utils/              storage.js, validators.js, permisos.js, formato.js
+├── App.jsx
+└── main.jsx
 ```
 
 ---
 
-| Herramienta | Rol Principal |
-| ----------- | ------------- |
-| Vite        | Entorno de desarrollo y empaquetador (bundler). |
-| React	     | Biblioteca de JavaScript. |
-| JSX | Extensión de sintaxis (JavaScript XML). |
-
-
----
-
-## Ejecución Local
-
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/usuario/huertohogar.git
-   cd huertohogar
-   ```
-2. Abre `index.html` en tu navegador (o usa la extensión *Live Server* de VS Code).
-3. Listo. No requiere instalación ni dependencias.
-
-También puedes desplegarlo gratis con **GitHub Pages** desde `Settings → Pages`.
-
----
-
-## Cuentas de Prueba
-
-| Correo | Contraseña | Rol |
-| ------ | ---------- | --- |
-| `admin@huertohogar.cl` | `admin123` | Administrador |
-| `vendedor@huertohogar.cl` | `vend123` | Vendedor |
-
-Para probar como **Cliente**, simplemente crea una cuenta desde la vista de registro.
-
----
-
-## Validaciones Implementadas
-
-- **Correo:** requerido en ingreso, máximo 100 caracteres, solo dominios `@duoc.cl`, `@profesor.duoc.cl` y `@gmail.com`
-- **Contraseña:** entre 4 y 10 caracteres
-- **RUN:** sin puntos ni guion, entre 7 y 9 caracteres, con validación real del dígito verificador (módulo 11)
-- **Contacto:** nombre requerido (máx. 100), comentario requerido (máx. 500) con contador en vivo
-- **Carrito:** no permite superar el stock disponible de cada producto
-
----
-## Catálogo Detallado de Productos
-
-| Código | Producto | Categoría | Precio | Stock | Descripción Destacada |
-| :---: | --- | --- | :---: | :---: | --- |
-| **FR001** | Manzanas Fuji | Frutas Frescas | $1,200 CLP / kg | 150 kg | Crujientes y dulces, cultivadas en el Valle del Maule. |
-| **FR002** | Naranjas Valencia | Frutas Frescas | $1,000 CLP / kg | 200 kg | Jugosas y ricas en vitamina C, ideales para zumos frescos. |
-| **FR003** | Plátanos Cavendish | Frutas Frescas | $800 CLP / kg | 250 kg | Maduros y dulces, excelentes para aportar energía diaria. |
-| **VR001** | Zanahorias Orgánicas | Verduras Orgánicas | $900 CLP / kg | 100 kg | Cultivadas sin pesticidas en O'Higgins. Fuente de vitamina A. |
-| **VR002** | Espinacas Frescas | Verduras Orgánicas | $700 CLP / 500g | 80 bolsas | Nutritivas y frescas, perfectas para batidos verdes. |
-| **VR003** | Pimientos Tricolores | Verduras Orgánicas | $1,500 CLP / kg | 120 kg | Pimientos rojos, amarillos y verdes ricos en antioxidantes. |
-| **PO001** | Miel Orgánica | Productos Orgánicos | $5,000 CLP / 500g | 50 frascos | Miel pura producida por apicultores locales. |
-| **PO003** | Quinua Orgánica | Productos Orgánicos | Consultar | En Stock | Grano ancestral con alto contenido proteico. |
-| **PL001** | Leche Entera | Productos Lácteos | Consultar | En Stock | Leche fresca proveniente de granjas locales. |
-
----
-
-## 👥 Equipo de Desarrollo
+## Equipo de desarrollo
 
 <div align="center">
 <table>
@@ -127,19 +157,19 @@ Para probar como **Cliente**, simplemente crea una cuenta desde la vista de regi
 <td align="center">
 <a href="https://github.com/Sebastia1111">
 <img src="https://github.com/Sebastia1111.png" width="100" style="border-radius:50%"><br>
-<strong>Sebastian Orellana</strong><br>
+<strong>Sebastian Orellana</strong>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/Joaquinstrap">
 <img src="https://github.com/Joaquinstrap.png" width="100" style="border-radius:50%"><br>
-<strong>Joaquin Correa</strong><br>
+<strong>Joaquin Correa</strong>
 </a>
 </td>
 <td align="center">
 <a href="https://github.com/estmedinat">
 <img src="https://github.com/estmedinat.png" width="100" style="border-radius:50%"><br>
-<strong>Esteban Medina</strong><br>
+<strong>Esteban Medina</strong>
 </a>
 </td>
 </tr>
@@ -148,16 +178,9 @@ Para probar como **Cliente**, simplemente crea una cuenta desde la vista de regi
 
 ---
 
-## 📄 Licencia
+## Licencia
 
-Este proyecto fue desarrollado con fines **educativos** como parte de la asignatura de Fullstack en DuocUC.
+Proyecto desarrollado con fines **educativos** para DuocUC.
 
-<div align="center">
 
-**Hecho con ❤️ para DuocUC**
-
-<p>
-<img src="https://img.shields.io/badge/FULLSTACK-2026-FFC20E?style=for-the-badge">
-</p>
-
-</div>
+[**Click Aquí para Obtener la Configuración!**](https://start.spring.io/#!type=maven-project&language=java&platformVersion=4.1.1&packaging=jar&configurationFileFormat=yaml&jvmVersion=21&groupId=com.fullstack&artifactId=&packageName=com.fullstack.&dependencies=web,cloud-eureka,data-jpa,validation,flyway,mysql,mariadb,lombok,cloud-feign,security)

@@ -2,18 +2,25 @@
 import { useState } from 'react';
 import { PRODUCTOS } from '../data/productos';
 import { CATEGORIAS } from '../data/categorias';
-import { calcularPrecioReal, tieneDescuentoDuoc, leerStorage } from '../utils/storage';
+import { calcularPrecioReal, tieneDescuentoDuoc } from '../utils/storage';
 
-export const ProductDetailPage = ({ codigo, sesion, onAddToCart }) => {
+export const ProductDetailPage = ({ codigo, sesion, productos, stocks, onAddToCart }) => {
   const [cantidad, setCantidad] = useState(1);
   const [errorCantidad, setErrorCantidad] = useState('');
 
-  const producto = PRODUCTOS.find((x) => x.codigo === codigo) || PRODUCTOS[0];
+  const catalogo = productos || PRODUCTOS;
+  const producto = catalogo.find((x) => x.codigo === codigo) || catalogo[0];
+  if (!producto) {
+    return (
+      <div className="container my-5 text-center">
+        <h2 className="text-success">No hay productos disponibles</h2>
+        <a href="#/inicio" className="btn btn-outline-success mt-3">Volver al catálogo</a>
+      </div>
+    );
+  }
   const cat = CATEGORIAS.find((c) => c.id === producto.categoria) || { nombre: 'Producto Fresco' };
 
-  // Consultar stock actualizado desde localStorage
-  const stocks = leerStorage('hh_stocks', {});
-  const stockDisponible = stocks[producto.codigo] !== undefined ? stocks[producto.codigo] : producto.stock;
+  const stockDisponible = stocks?.[producto.codigo] ?? producto.stock;
 
   const precioFinal = calcularPrecioReal(producto.precio, sesion);
   const aplicaDcto = tieneDescuentoDuoc(sesion);

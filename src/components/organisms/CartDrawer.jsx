@@ -1,5 +1,15 @@
 // src/components/organisms/CartDrawer.jsx
+import { useState } from 'react';
 import { calcularPrecioReal } from '../../utils/storage';
+
+// Fecha local en formato YYYY-MM-DD sumando días a hoy
+const fechaMasDias = (dias) => {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() + dias);
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  return `${fecha.getFullYear()}-${mes}-${dia}`;
+};
 
 export const CartDrawer = ({
   isOpen,
@@ -10,8 +20,12 @@ export const CartDrawer = ({
   onClearCart,
   sesion,
   onMostrarAviso,
-  onFinalizarCompra
+  onFinalizarCompra,
+  modoApi = false
 }) => {
+  const [procesando, setProcesando] = useState(false);
+  const [fechaEntrega, setFechaEntrega] = useState(() => fechaMasDias(2));
+
   if (!isOpen) return null;
 
   const total = cartItems.reduce((suma, item) => {
@@ -42,7 +56,7 @@ export const CartDrawer = ({
 
 
 
-  const handleFinalizarCompra = () => {
+  const handleFinalizarCompra = async () => {
     if (cartItems.length === 0) {
       onMostrarAviso('Tu carrito está vacío');
       return;
@@ -55,27 +69,47 @@ export const CartDrawer = ({
       return;
     }
 
-    const pedidos = JSON.parse(localStorage.getItem('hh_pedidos') || '[]');
-    const numPedido = 'HH-' + (1001 + pedidos.length);
-
-    pedidos.push({
-      numero: numPedido,
-      cliente: sesion.correo,
-      fecha: new Date().toLocaleDateString('es-CL'),
-      items: cartItems,
-      total,
-      estado: 'pendiente'
-    });
-
-    localStorage.setItem('hh_pedidos', JSON.stringify(pedidos));
-
-    if (onFinalizarCompra) {
-      onFinalizarCompra(cartItems);
+    const minimo = fechaMasDias(1);
+    const maximo = fechaMasDias(30);
+    if (fechaEntrega < minimo || fechaEntrega > maximo) {
+      onMostrarAviso('Elige una fecha de entrega entre mañana y los próximos 30 días');
+      return;
     }
 
-    onClearCart();
-    onClose();
-    onMostrarAviso(`¡Pedido ${numPedido} recibido! Te avisaremos cuando esté en camino 🌱`);
+    // Número provisorio: el definitivo (boleta HH-xxxx) lo asigna el backend
+    const referencia = 'WEB-' + Date.now();
+
+    setProcesando(true);
+    try {
+      const respuesta = onFinalizarCompra
+        ? await onFinalizarCompra(cartItems, referencia, { fechaEntrega })
+        : null;
+
+      onClearCart();
+      onClose();
+
+      if (respuesta?.numero) {
+        onMostrarAviso(
+          `¡Pedido ${respuesta.numero} confirmado por $${Number(respuesta.total).toLocaleString('es-CL')}! ` +
+            'Revisa tu boleta en "Mis pedidos" 🌱'
+        );
+      } else if (modoApi) {
+        onMostrarAviso('Compra registrada y stock actualizado 🌱');
+      } else {
+        // Modo local (backend apagado): el pedido no queda registrado en el servidor
+        onMostrarAviso('Compra simulada en modo local: el backend no está disponible.');
+      }
+    } catch (error) {
+      if (error?.status === 401 || error?.status === 403) {
+        onMostrarAviso('Tu sesión expiró o no tiene permisos. Inicia sesión nuevamente.');
+        onClose();
+        window.location.assign('#/ingreso');
+        return;
+      }
+      onMostrarAviso(error?.message || 'No se pudo descontar el stock. Intenta nuevamente.');
+    } finally {
+      setProcesando(false);
+    }
   };
 
   return (
@@ -165,6 +199,22 @@ export const CartDrawer = ({
         </div>
 
         <div className="p-3 border-top bg-light">
+          {cartItems.length > 0 && sesion && modoApi && (
+            <div className="mb-3">
+              <label htmlFor="fechaEntrega" className="form-label small fw-bold mb-1">
+                Fecha de entrega preferida
+              </label>
+              <input
+                id="fechaEntrega"
+                type="date"
+                className="form-control form-control-sm"
+                value={fechaEntrega}
+                min={fechaMasDias(1)}
+                max={fechaMasDias(30)}
+                onChange={(e) => setFechaEntrega(e.target.value)}
+              />
+            </div>
+          )}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <span className="text-muted fw-bold">Total</span>
             <strong className="fs-4 text-success">${total.toLocaleString('es-CL')}</strong>
@@ -181,9 +231,9 @@ export const CartDrawer = ({
           <button
             className="btn btn-success w-100 fw-bold py-2 rounded-3"
             onClick={handleFinalizarCompra}
-            disabled={cartItems.length === 0}
+            disabled={cartItems.length === 0 || procesando}
           >
-            Finalizar compra
+            {procesando ? 'Procesando…' : 'Finalizar compra'}
           </button>
         </div>
       </div>

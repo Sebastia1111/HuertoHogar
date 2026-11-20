@@ -4,7 +4,6 @@ import { FormField } from '../molecules/FormField';
 import { SelectField } from '../molecules/SelectField';
 import { Button } from '../atoms/Button';
 import { regionesYComunas } from '../../data/regiones';
-import { leerStorage, guardarStorage } from '../../utils/storage'; // 👈 Importamos los helpers de storage
 import {
   validarRun,
   validarTextoRequerido,
@@ -13,7 +12,7 @@ import {
   validarSeleccion
 } from '../../utils/validators';
 
-export const RegisterForm = ({ onSuccess }) => {
+export const RegisterForm = ({ onSuccess, onRegister }) => {
   const [formData, setFormData] = useState({
     run: '',
     nombre: '',
@@ -27,6 +26,8 @@ export const RegisterForm = ({ onSuccess }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [errorGeneral, setErrorGeneral] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const regionSeleccionada = regionesYComunas.find(r => r.region === formData.region);
   const opcionesComunas = regionSeleccionada ? regionSeleccionada.comunas : [];
@@ -43,9 +44,10 @@ export const RegisterForm = ({ onSuccess }) => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (errorGeneral) setErrorGeneral('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const obtenerErrorCorreo = (correo) => {
@@ -77,41 +79,58 @@ export const RegisterForm = ({ onSuccess }) => {
       return;
     }
 
-    // 🟢 Lectura directa y sin advertencias del linter:
-    const usuarios = leerStorage('hh_usuarios', []);
-    const correoLimpio = formData.correo.trim().toLowerCase();
-
-    const existe = usuarios.some(
-      (u) => u && u.correo && u.correo.trim().toLowerCase() === correoLimpio
-    );
-
-    if (existe) {
-      setErrors({ correo: 'Este correo ya se encuentra registrado.' });
+    if (!onRegister) {
+      setErrorGeneral('El servicio de autenticación no está configurado.');
       return;
     }
 
-    const nuevoUsuario = {
-      ...formData,
-      run: formData.run.trim(),
-      nombre: formData.nombre.trim(),
-      apellidos: formData.apellidos.trim(),
-      correo: correoLimpio,
-      clave: formData.clave.trim(),
-      direccion: formData.direccion.trim(),
-      tipo: correoLimpio.endsWith('@huertohogar.cl') ? 'Administrador' : 'Cliente'
-    };
+    const correoLimpio = formData.correo.trim().toLowerCase();
 
-    usuarios.push(nuevoUsuario);
-    guardarStorage('hh_usuarios', usuarios);
+    setEnviando(true);
+    setErrorGeneral('');
 
-    alert('¡Cuenta creada con éxito!');
-    if (onSuccess) onSuccess(nuevoUsuario);
+    try {
+      const usuario = await onRegister({
+        run: formData.run.trim(),
+        nombre: formData.nombre.trim(),
+        apellidos: formData.apellidos.trim(),
+        correo: correoLimpio,
+        clave: formData.clave.trim(),
+        fechaNacimiento: formData.fechaNacimiento || null,
+        region: formData.region,
+        comuna: formData.comuna,
+        direccion: formData.direccion.trim()
+      });
+
+      if (onSuccess) onSuccess(usuario);
+    } catch (error) {
+      if (error?.detalles && typeof error.detalles === 'object') {
+        setErrors((prev) => ({ ...prev, ...error.detalles }));
+      } else if (error?.status === 409) {
+        const mensaje = error.message || '';
+        if (mensaje.toLowerCase().includes('run')) {
+          setErrors({ run: mensaje });
+        } else {
+          setErrors({ correo: mensaje || 'Este correo ya se encuentra registrado.' });
+        }
+      } else {
+        setErrorGeneral(error?.message || 'No se pudo crear la cuenta. Intenta nuevamente.');
+      }
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} noValidate className="p-4 border rounded shadow-sm bg-white" style={{ maxWidth: '600px', margin: '0 auto' }}>
       <h2 className="text-center mb-1 fw-bold">Crea tu cuenta</h2>
       <p className="text-center text-muted mb-4 small">Únete y recibe lo mejor del campo en tu puerta.</p>
+
+      {errorGeneral && (
+        <div className="alert alert-danger py-2 small" role="alert">
+          {errorGeneral}
+        </div>
+      )}
 
       <FormField
         label="RUN"
@@ -208,8 +227,8 @@ export const RegisterForm = ({ onSuccess }) => {
         error={errors.direccion}
       />
 
-      <Button type="submit" variant="success" className="w-100 mt-2 fw-bold">
-        Crear Cuenta
+      <Button type="submit" variant="success" className="w-100 mt-2 fw-bold" disabled={enviando}>
+        {enviando ? 'Creando cuenta…' : 'Crear Cuenta'}
       </Button>
 
       <p className="text-center mt-3 mb-0 small">

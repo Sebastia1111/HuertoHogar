@@ -5,15 +5,16 @@ import { BLOGS } from '../../data/blogs';
 import { Input } from '../atoms/Input';
 import { Button } from '../atoms/Button';
 
-export const SearchOverlay = ({ isOpen, onClose }) => {
+export const SearchOverlay = ({ isOpen, onClose, productos }) => {
   const [query, setQuery] = useState('');
 
   if (!isOpen) return null;
 
   const q = query.trim().toLowerCase();
+  const catalogo = productos || PRODUCTOS;
 
   const productosEncontrados = q
-    ? PRODUCTOS.filter((p) =>
+    ? catalogo.filter((p) =>
         (p.nombre + ' ' + p.codigo + ' ' + p.categoria).toLowerCase().includes(q)
       )
     : [];

@@ -3,15 +3,16 @@ import { useState } from 'react';
 import { FormField } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
 import { validarCorreo, validarClave } from '../../utils/validators';
-import { leerStorage } from '../../utils/storage'; // 👈 Importamos leerStorage
 
-export const LoginForm = ({ onSuccess }) => {
+export const LoginForm = ({ onSuccess, onLogin }) => {
   const [formData, setFormData] = useState({
     correo: '',
     clave: ''
   });
 
   const [errors, setErrors] = useState({});
+  const [errorGeneral, setErrorGeneral] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,9 +20,10 @@ export const LoginForm = ({ onSuccess }) => {
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
+    if (errorGeneral) setErrorGeneral('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const errorCorreo = validarCorreo(formData.correo);
@@ -31,31 +33,33 @@ export const LoginForm = ({ onSuccess }) => {
     if (errorCorreo) newErrors.correo = errorCorreo;
     if (errorClave) newErrors.clave = errorClave;
 
-    if (Object.keys(newErrors).length === 0) {
-      // 🟢 Lectura limpia y segura sin errores de linter:
-      const usuarios = leerStorage('hh_usuarios', []);
-
-      const correoIngresado = formData.correo.trim().toLowerCase();
-      const claveIngresada = formData.clave.trim();
-
-      const usuarioEncontrado = usuarios.find(
-        (u) =>
-          u &&
-          u.correo &&
-          u.correo.trim().toLowerCase() === correoIngresado &&
-          u.clave &&
-          u.clave.trim() === claveIngresada
-      );
-
-      if (!usuarioEncontrado) {
-        newErrors.correo = 'Correo o contraseña incorrectos, o la cuenta no existe.';
-      } else {
-        if (onSuccess) onSuccess(usuarioEncontrado);
-        return;
-      }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-    setErrors(newErrors);
+    if (!onLogin) {
+      setErrorGeneral('El servicio de autenticación no está configurado.');
+      return;
+    }
+
+    setEnviando(true);
+    setErrorGeneral('');
+
+    try {
+      const usuario = await onLogin(formData.correo.trim(), formData.clave);
+      if (onSuccess) onSuccess(usuario);
+    } catch (error) {
+      if (error?.detalles && typeof error.detalles === 'object') {
+        setErrors((prev) => ({ ...prev, ...error.detalles }));
+      } else if (error?.status === 401) {
+        setErrors({ correo: 'Correo o contraseña incorrectos.' });
+      } else {
+        setErrorGeneral(error?.message || 'No se pudo iniciar sesión. Intenta nuevamente.');
+      }
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -63,6 +67,12 @@ export const LoginForm = ({ onSuccess }) => {
       <div className="text-center mb-3 fs-1">🥑</div>
       <h2 className="text-center mb-1 fw-bold">Ingresa a tu cuenta</h2>
       <p className="text-center text-muted mb-4 small">Bienvenido de vuelta a HuertoHogar.</p>
+
+      {errorGeneral && (
+        <div className="alert alert-danger py-2 small" role="alert">
+          {errorGeneral}
+        </div>
+      )}
 
       <FormField
         label="Correo"
@@ -86,8 +96,13 @@ export const LoginForm = ({ onSuccess }) => {
         error={errors.clave}
       />
 
-      <Button type="submit" variant="success" className="w-100 mt-2 fw-bold">
-        Iniciar Sesión
+      <Button
+        type="submit"
+        variant="success"
+        className="w-100 mt-2 fw-bold"
+        disabled={enviando}
+      >
+        {enviando ? 'Ingresando…' : 'Iniciar Sesión'}
       </Button>
 
       <p className="text-center mt-3 mb-0 small">

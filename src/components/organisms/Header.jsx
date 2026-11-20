@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { puedeGestionar } from '../../utils/permisos';
 
 export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount, sesion, onCerrarSesion }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -70,13 +71,28 @@ export const Header = ({ onOpenMenu, onOpenCart, onOpenSearch, cartCount, sesion
               <p className="fw-bold m-0 text-dark">Hola, {sesion.nombre}</p>
               <small className="text-muted d-block mb-2">{sesion.tipo}</small>
 
-              {sesion.tipo === 'Administrador' && (
+              <a
+                href="#/pedidos"
+                className="btn btn-light btn-sm w-100 mb-2 fw-bold text-start"
+                onClick={() => setShowUserMenu(false)}
+              >
+                🧾 Mis pedidos
+              </a>
+              <a
+                href="#/perfil"
+                className="btn btn-light btn-sm w-100 mb-2 fw-bold text-start"
+                onClick={() => setShowUserMenu(false)}
+              >
+                🙍 Mi perfil
+              </a>
+
+              {puedeGestionar(sesion) && (
                 <a
                   href="#/admin"
                   className="btn btn-outline-success btn-sm w-100 mb-2 fw-bold"
                   onClick={() => setShowUserMenu(false)}
                 >
-                  📦 Gestionar stock
+                  📦 Panel de gestión
                 </a>
               )}
 

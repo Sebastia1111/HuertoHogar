@@ -7,12 +7,12 @@ import { InfoSection } from '../components/organisms/InfoSection';
 import { Heading, Text } from '../components/atoms/Typography';
 import { Button } from '../components/atoms/Button';
 
-export const HomePage = ({ onAddToCart, sesion, stocks }) => {
+export const HomePage = ({ onAddToCart, sesion, stocks, productos }) => {
   const [texto, setTexto] = useState('');
   const [categoria, setCategoria] = useState('todas');
   const [orden, setOrden] = useState('relevancia');
 
-  const listaProductos = PRODUCTOS || [];
+  const listaProductos = productos || PRODUCTOS || [];
 
   const productosFiltrados = listaProductos
     .filter((prod) => {

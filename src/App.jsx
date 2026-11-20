@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Header } from './components/organisms/Header';
 import { Footer } from './components/organisms/Footer';
 import { MobileMenu } from './components/organisms/MobileMenu';
@@ -16,8 +16,11 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { AdminPage } from './pages/AdminPage';
 import { BlogsPage } from './pages/BlogsPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
+import { PedidosPage } from './pages/PedidosPage';
+import { PerfilPage } from './pages/PerfilPage';
 
-import { PRODUCTOS } from './data/productos';
+import { useInventario } from './hooks/useInventario';
+import { useAuth } from './hooks/useAuth';
 import { leerStorage, guardarStorage } from './utils/storage';
 
 export function App() {
@@ -27,58 +30,46 @@ export function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
 
-  const [sesion, setSesion] = useState(() => leerStorage('hh_sesion', null));
+  const { sesion, verificandoSesion, iniciarSesion, registrar, cerrarSesion, actualizarUsuario } = useAuth();
   const [cartItems, setCartItems] = useState(() => leerStorage('hh_carrito', []));
 
-
-  //Cuenta administrador 
-  // src/App.jsx
+  // Elimina las credenciales locales en texto plano de versiones anteriores.
   useEffect(() => {
-    const usuariosGuardados = leerStorage('hh_usuarios', []);
-    const existeAdmin = usuariosGuardados.some(u => u.correo === 'admin@huertohogar.cl');
-
-    if (!existeAdmin) {
-      const adminDefault = {
-        run: '11111111K',
-        nombre: 'Administrador',
-        apellidos: 'HuertoHogar',
-        correo: 'admin@huertohogar.cl',
-        clave: '12345',
-        tipo: 'Administrador',
-        region: 'Región Metropolitana',
-        comuna: 'Santiago',
-        direccion: 'Av. Principal 123'
-      };
-      guardarStorage('hh_usuarios', [...usuariosGuardados, adminDefault]);
-    }
+    localStorage.removeItem('hh_usuarios');
+    localStorage.removeItem('hh_sesion');
   }, []);
 
 
 
 
   // Estado global de stock dinámico
-  const [stocks, setStocks] = useState(() => {
-    const guardado = leerStorage('hh_stocks', null);
-    if (guardado) return guardado;
-    const inicial = {};
-    PRODUCTOS.forEach((p) => {
-      inicial[p.codigo] = p.stock;
-    });
-    return inicial;
-  });
+  const {
+    productos,
+    stocks,
+    modoApi,
+    cargando: cargandoInventario,
+    errorApi,
+    recargar: recargarInventario,
+    actualizarStock,
+    descontarStock
+  } = useInventario();
 
-  const mostrarAviso = (msg) => {
+  const mostrarAviso = useCallback((msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2800);
-  };
+  }, []);
+
+  useEffect(() => {
+    const alExpirarSesion = () => {
+      mostrarAviso('Tu sesión expiró. Inicia sesión nuevamente.');
+    };
+    window.addEventListener('hh:sesion-expirada', alExpirarSesion);
+    return () => window.removeEventListener('hh:sesion-expirada', alExpirarSesion);
+  }, [mostrarAviso]);
 
   useEffect(() => {
     guardarStorage('hh_carrito', cartItems);
   }, [cartItems]);
-
-  useEffect(() => {
-    guardarStorage('hh_stocks', stocks);
-  }, [stocks]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -89,28 +80,34 @@ export function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const handleUpdateStock = (codigo, nuevoStock) => {
-    setStocks((prev) => ({
-      ...prev,
-      [codigo]: Number(nuevoStock)
-    }));
+  const handleUpdateStock = async (codigo, nuevoStock) => {
+    try {
+      await actualizarStock(codigo, nuevoStock, 'Ajuste desde panel administrador');
+      mostrarAviso(`Stock de ${codigo} actualizado`);
+      return true;
+    } catch (error) {
+      mostrarAviso(error.message || 'No se pudo guardar el stock en la API');
+      return false;
+    }
   };
 
-  const handleFinalizarCompraStock = (itemsComprados) => {
-    setStocks((prev) => {
-      const nuevos = { ...prev };
-      itemsComprados.forEach((item) => {
-        const actual = nuevos[item.codigo] !== undefined ? nuevos[item.codigo] : item.stock;
-        nuevos[item.codigo] = Math.max(0, actual - item.cantidad);
-      });
-      return nuevos;
-    });
-  };
+  const handleFinalizarCompraStock = async (itemsComprados, referencia, opciones) =>
+    descontarStock(
+      itemsComprados.map((item) => ({ codigo: item.codigo, cantidad: item.cantidad })),
+      referencia,
+      opciones
+    );
 
   const handleAddToCart = (producto, cantidad = 1) => {
     const stockDisp = stocks[producto.codigo] !== undefined ? stocks[producto.codigo] : producto.stock;
     if (stockDisp <= 0) {
       mostrarAviso('Producto sin stock disponible');
+      return;
+    }
+
+    const cantidadEnCarrito = cartItems.find((item) => item.codigo === producto.codigo)?.cantidad ?? 0;
+    if (cantidadEnCarrito + cantidad > stockDisp) {
+      mostrarAviso(`Solo hay ${stockDisp} unidades disponibles de ${producto.nombre}`);
       return;
     }
 
@@ -131,6 +128,11 @@ export function App() {
       handleRemoveItem(codigo);
       return;
     }
+    const stockDisponible = stocks[codigo] ?? 0;
+    if (nuevaCantidad > stockDisponible) {
+      mostrarAviso(`Solo hay ${stockDisponible} unidades disponibles de este producto`);
+      return;
+    }
     setCartItems((prev) =>
       prev.map((i) => (i.codigo === codigo ? { ...i, cantidad: nuevaCantidad } : i))
     );
@@ -141,9 +143,8 @@ export function App() {
     mostrarAviso('Producto quitado del carrito');
   };
 
-  const handleCerrarSesion = () => {
-    setSesion(null);
-    localStorage.removeItem('hh_sesion');
+  const handleCerrarSesion = async () => {
+    await cerrarSesion();
     mostrarAviso('Sesión cerrada');
   };
 
@@ -154,6 +155,7 @@ export function App() {
         <ProductDetailPage
           codigo={codigo}
           sesion={sesion}
+          productos={productos}
           stocks={stocks}
           onAddToCart={handleAddToCart}
         />
@@ -175,9 +177,8 @@ export function App() {
       case '#/ingreso':
         return (
           <LoginPage
+            onLogin={iniciarSesion}
             onLoginSuccess={(user) => {
-              setSesion(user);
-              guardarStorage('hh_sesion', user);
               mostrarAviso(`Sesión iniciada, ¡hola ${user.nombre || user.correo}!`);
               window.location.hash = '#/inicio';
             }}
@@ -186,9 +187,8 @@ export function App() {
       case '#/registro':
         return (
           <RegisterPage
+            onRegister={registrar}
             onRegisterSuccess={(user) => {
-              setSesion(user);
-              guardarStorage('hh_sesion', user);
               mostrarAviso(`Cuenta creada, ¡bienvenido ${user.nombre}!`);
               window.location.hash = '#/inicio';
             }}
@@ -198,8 +198,34 @@ export function App() {
         return (
           <AdminPage
             sesion={sesion}
+            verificandoSesion={verificandoSesion}
+            productos={productos}
             stocks={stocks}
             onUpdateStock={handleUpdateStock}
+            modoApi={modoApi}
+            cargando={cargandoInventario}
+            errorApi={errorApi}
+            onReintentar={recargarInventario}
+            onMostrarAviso={mostrarAviso}
+          />
+        );
+      case '#/pedidos':
+        return (
+          <PedidosPage
+            sesion={sesion}
+            verificandoSesion={verificandoSesion}
+            onMostrarAviso={mostrarAviso}
+            onPedidoCancelado={recargarInventario}
+          />
+        );
+      case '#/perfil':
+        return (
+          <PerfilPage
+            sesion={sesion}
+            verificandoSesion={verificandoSesion}
+            onMostrarAviso={mostrarAviso}
+            onPerfilActualizado={actualizarUsuario}
+            onSesionCerrada={handleCerrarSesion}
           />
         );
       case '#/inicio':
@@ -209,6 +235,7 @@ export function App() {
             onAddToCart={handleAddToCart}
             sesion={sesion}
             stocks={stocks}
+            productos={productos}
           />
         );
     }
@@ -232,7 +259,11 @@ export function App() {
         onCerrarSesion={handleCerrarSesion}
       />
 
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        productos={productos}
+      />
 
       <CartDrawer
         isOpen={isCartOpen}
@@ -247,6 +278,7 @@ export function App() {
         sesion={sesion}
         onMostrarAviso={mostrarAviso}
         onFinalizarCompra={handleFinalizarCompraStock}
+        modoApi={modoApi}
       />
 
       <main className="flex-grow-1">{renderPage()}</main>

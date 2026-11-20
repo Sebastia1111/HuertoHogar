@@ -1,6 +1,7 @@
 // src/components/organisms/MobileMenu.jsx
 import { Button } from '../atoms/Button';
 import { Heading, Text } from '../atoms/Typography';
+import { puedeGestionar } from '../../utils/permisos';
 
 export const MobileMenu = ({ isOpen, onClose, sesion, onCerrarSesion }) => {
   if (!isOpen) return null;
@@ -43,13 +44,20 @@ export const MobileMenu = ({ isOpen, onClose, sesion, onCerrarSesion }) => {
               <p className="fw-bold m-0 text-dark">Hola, {sesion.nombre || sesion.correo}</p>
               <small className="text-muted d-block mb-3">{sesion.tipo || 'Cliente'}</small>
 
-              {sesion.tipo === 'Administrador' && (
+              <a href="#/pedidos" className="btn btn-light btn-sm w-100 mb-2 fw-bold text-start" onClick={onClose}>
+                🧾 Mis pedidos
+              </a>
+              <a href="#/perfil" className="btn btn-light btn-sm w-100 mb-2 fw-bold text-start" onClick={onClose}>
+                🙍 Mi perfil
+              </a>
+
+              {puedeGestionar(sesion) && (
                 <a
                   href="#/admin"
                   className="btn btn-outline-success btn-sm w-100 mb-2 fw-bold"
                   onClick={onClose}
                 >
-                  📦 Gestionar stock
+                  📦 Panel de gestión
                 </a>
               )}
 

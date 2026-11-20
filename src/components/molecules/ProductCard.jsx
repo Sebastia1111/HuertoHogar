@@ -19,7 +19,7 @@ export const ProductCard = ({ producto, sesion, stocks = {}, onAddToCart }) => {
   const handleAddToCartClick = (e) => {
     e.stopPropagation();
     if (stockDisponible > 0) {
-      onAddToCart({ ...producto, precio: precioFinal });
+      onAddToCart(producto);
     }
   };
 
